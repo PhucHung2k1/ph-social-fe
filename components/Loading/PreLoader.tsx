@@ -5,7 +5,7 @@ function PrevLoader() {
   const showLoading = useAppSelector((state) => state.loadingSlice.isLoading);
 
   return showLoading ? (
-    <div className="fixed inset-0 h-screen w-screen cursor-wait ">
+    <div className="fixed inset-0 h-screen w-screen cursor-wait z-100000000000000000  ">
       <div className="relative flex h-full w-full items-center justify-center">
         <div
           className="absolute inset-0 bg-cover"

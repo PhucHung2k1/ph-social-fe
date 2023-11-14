@@ -1,13 +1,16 @@
-import '../styles/global.css';
-import type { AppProps } from 'next/app';
+import ToastContainer from '@/components/Toast';
 import { ThemeProvider, createTheme } from '@mui/material';
-import { Router } from 'next/router';
-import 'nprogress/nprogress.css';
-import NProgress from 'nprogress';
-import PrevLoader from '../components/Loading/PreLoader';
-import { Provider } from 'react-redux';
 import { SessionProvider } from 'next-auth/react';
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import { Router } from 'next/router';
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+import { Provider } from 'react-redux';
+import PrevLoader from '../components/Loading/PreLoader';
 import { store } from '../store/store';
+import '../styles/global.css';
+
 //Binding events.
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -19,9 +22,6 @@ const theme = createTheme({
     fontFamily: 'Inter, sans-serif',
   },
   palette: {
-    success: {
-      main: '#69B000',
-    },
     error: {
       main: '#DA2036',
     },
@@ -42,6 +42,12 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ThemeProvider theme={theme}>
         <SessionProvider session={pageProps.session}>
           <main>
+            <Head>
+              <title>PH Social</title>
+              <link rel="icon" href="/images/logo-main.svg" />
+            </Head>
+            {/* <ScrollToTopButton /> */}
+            <ToastContainer />
             <Component {...pageProps} />
             <PrevLoader />
           </main>

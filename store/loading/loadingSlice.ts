@@ -11,28 +11,9 @@ const loadingSlice = createSlice({
   name: 'loading',
   initialState,
   reducers: {
-    showLoading: (state) => {
-      state.isLoading = true;
+    showLoading: (state, action) => {
+      state.isLoading = action.payload;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addMatcher(
-        (action) => {
-          return action.type.endsWith('/pending');
-        },
-        (state) => {
-          state.isLoading = true;
-        }
-      )
-      .addMatcher(
-        (action) =>
-          action.type.endsWith('/fulfilled') ||
-          action.type.endsWith('/rejected'),
-        (state) => {
-          state.isLoading = false;
-        }
-      );
   },
 });
 export const { showLoading } = loadingSlice.actions;

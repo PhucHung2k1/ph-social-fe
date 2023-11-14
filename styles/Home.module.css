@@ -114,3 +114,7 @@
     flex-direction: column;
   }
 }
+/* styles.css hoặc tương tự */
+.bgGradient {
+  background: conic-gradient(#00adc3, #90cdf4, #4299e1, #90cdf4, #00adc3);
+}

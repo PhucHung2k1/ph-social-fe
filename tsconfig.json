@@ -20,6 +20,15 @@
       "@/public/*": ["./public/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "components/oop.jsx",
+    "components/oop.jsx",
+    "components/oop1.jsx",
+    "components/layouts/LayoutMain.jsx",
+    "pages/socket-client.jsx"
+  ],
   "exclude": ["node_modules"]
 }

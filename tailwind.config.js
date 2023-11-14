@@ -9,36 +9,11 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    screens: {
-      sm: '640px',
-      md: '768px',
-      lg: '1024px',
-      xl: '1280px',
-      '2xl': '1520px',
-    },
-    fontSize: {
-      xs: '0.75rem',
-      sm: '0.875rem',
-      base: '1rem',
-      lg: '1.125rem',
-      xl: '1.25rem',
-      '2xl': '1.5rem',
-      '3xl': '1.875rem',
-      '4xl': '2.25rem',
-      '5xl': '3rem',
-      '6xl': '4rem',
-      '13xl': '2rem',
-    },
-    borderWidth: {
-      DEFAULT: '1px',
-      0: '0',
-      2: '2px',
-      3: '3px',
-      4: '4px',
-      6: '6px',
-      8: '8px',
-    },
     extend: {
+      screens: {
+        md2: '1550px',
+        md1: '1240px',
+      },
       boxShadow: {
         'mango-shadow-1': 'inset 0px 0px 2px rgba(0, 0, 0, 0.16)',
       },
@@ -70,6 +45,7 @@ module.exports = {
         'blue-gray': '#F9F9FA',
         'blue-gray-900': '#75778F',
         'line-main': '#DEDEE8',
+        'text-light-gray': '#6f7f92',
 
         gray: {
           100: '#f7fafc',
@@ -94,6 +70,7 @@ module.exports = {
           800: '#2c5282',
           900: '#2a4365',
         },
+
         pink: {
           50: '#FDE5ED',
           600: '#E12F65',
@@ -121,6 +98,10 @@ module.exports = {
         tertiary: '#9B9BA0',
         'disable-input': '#F2F2F2',
         'primary-gradient': '#4DD1E3',
+        'purple-bold': '#012e6b',
+        'main-home': '#f0f2f5',
+        'text-gray-bold': '#65676B',
+        'text-blue-fb': '#1876F2',
       },
     },
   },
