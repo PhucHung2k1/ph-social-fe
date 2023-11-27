@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createWrapper } from 'next-redux-wrapper';
-
 import loadingSlice from './loading/loadingSlice';
 import toastSlice from './toast/toastSlice';
 import authSlice from './auth/authSlice';
@@ -12,6 +11,10 @@ import savedPostsSlice from './savedPosts/savedPostsSlice';
 import suggestionSlice from './suggestion/suggestionSlice';
 import socketSlice from './socket/socketSlice';
 import notifySlice from './notify/notifySlice';
+import messageSlice from './message/messageSlice';
+import onlineSlice from './online/onlineSlice';
+import callSlice from './call/callSlice';
+import peerSlice from './peer/peerSlice';
 export const store = configureStore({
   reducer: {
     loadingSlice,
@@ -25,6 +28,10 @@ export const store = configureStore({
     savedPostsSlice,
     socketSlice,
     notifySlice,
+    messageSlice,
+    onlineSlice,
+    callSlice,
+    peerSlice,
   },
 });
 

@@ -2,20 +2,20 @@ import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { getDataAPI } from '@/utils/fetchData';
 import { Clear, HomeOutlined, Search } from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
-import PersonAdd from '@mui/icons-material/PersonAdd';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
-import Settings from '@mui/icons-material/Settings';
 import {
   Avatar,
   Button,
   CircularProgress,
   Divider,
+  FormControl,
   Grid,
   IconButton,
   InputAdornment,
-  ListItemIcon,
+  InputLabel,
   Menu,
   MenuItem,
+  Select,
   Skeleton,
   Tab,
   Tabs,
@@ -31,6 +31,7 @@ import { useDebounce, useOnClickOutside } from 'usehooks-ts';
 import UserCard from '../User/UserCard';
 
 import { logout } from '@/store/user/userAction';
+import { useTranslation } from 'react-i18next';
 import NotifyModal from './NotifyModal';
 
 interface StyledTabsProps {
@@ -106,6 +107,7 @@ const items = [
 
 function Header() {
   const { data: session }: { data: any } = useSession();
+  const { i18n } = useTranslation();
 
   const [anchorElAvatar, setAnchorElAvatar] = useState<any>(null);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
@@ -115,7 +117,8 @@ function Header() {
   const ref = useRef(null);
   const [tabValue, setTabValue] = useState(0);
   const [users, setUsers] = useState([]);
-
+  const [language, setLanguage] = useState<any>('en');
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useAppDispatch();
@@ -178,6 +181,18 @@ function Header() {
       dispatch(logout());
     }
   };
+
+  const handleChange = (event: any) => {
+    setLanguage(event.target.value);
+    i18n.changeLanguage(event.target.value);
+    localStorage.setItem('lng', event.target.value);
+  };
+  useEffect(() => {
+    const lng: any = localStorage.getItem('lng');
+    setLanguage(lng || 'en');
+    i18n.changeLanguage(lng || 'en');
+  }, []);
+
   useEffect(() => {
     if (debouncedValue) {
       setIsLoading(true);
@@ -253,7 +268,7 @@ function Header() {
                 <div className="flex h-full items-center justify-start relative">
                   <TextField
                     variant="outlined"
-                    placeholder="Search..."
+                    placeholder={`${t('search')}`}
                     InputProps={{
                       style: { height: '40px', border: 'none' },
                       startAdornment: (
@@ -329,6 +344,20 @@ function Header() {
                 </Popover>
               </IconButton> */}
 
+              <FormControl className="w-[150px] ">
+                <InputLabel id="language-label">Language</InputLabel>
+                <Select
+                  labelId="language-label"
+                  id="language-select"
+                  value={language}
+                  onChange={handleChange}
+                  label="Language"
+                >
+                  <MenuItem value="en">English</MenuItem>
+                  <MenuItem value="vi">Tiếng Việt</MenuItem>
+                </Select>
+              </FormControl>
+
               {auth?.user?.avatar ? (
                 <IconButton
                   onClick={handleClickAvatar}
@@ -389,24 +418,11 @@ function Header() {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
                 <MenuItem onClick={handleProfile}>
-                  <PersonOutlineOutlinedIcon className="mr-2" /> Profile
+                  <PersonOutlineOutlinedIcon className="mr-2" /> {t('profile')}
                 </MenuItem>
-                <MenuItem onClick={handleProfile}>
-                  <PersonOutlineOutlinedIcon className="mr-2" /> My account
-                </MenuItem>
+
                 <Divider />
-                <MenuItem onClick={handleClose}>
-                  <ListItemIcon>
-                    <PersonAdd fontSize="small" />
-                  </ListItemIcon>
-                  Add another account
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <ListItemIcon>
-                    <Settings fontSize="small" />
-                  </ListItemIcon>
-                  Settings
-                </MenuItem>
+
                 <MenuItem onClick={handleSignOut}>
                   <Button
                     variant="contained"
@@ -415,7 +431,7 @@ function Header() {
                     sx={{ '&:hover': { backgroundColor: '#00ADC3' } }}
                     startIcon={<LogoutIcon />}
                   >
-                    LOGOUT
+                    {t('logOut')}
                   </Button>
                 </MenuItem>
               </Menu>

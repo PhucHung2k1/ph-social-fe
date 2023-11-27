@@ -4,6 +4,7 @@ import { Auth } from '../auth/authSlice';
 import { updatePostRedux } from '../post/postSlice';
 import { deleteDataAPI, patchDataAPI, postDataAPI } from '@/utils/fetchData';
 import { DeleteData, EditData } from '../globalTypes';
+import { createNotify, removeNotify } from '../notify/notifyAction';
 
 export const createComment =
   (post: PostData, newComment: any, auth: Auth, socket: any) =>
@@ -26,6 +27,20 @@ export const createComment =
 
       // socket
       socket.emit('createComment', newPost);
+
+      // notify
+
+      const msg = {
+        id: auth?.user?._id,
+        text: newComment?.reply
+          ? 'mentioned you in a comment.'
+          : 'has commented on your post.',
+        recipients: newComment?.reply ? [newComment.tag._id] : [post.user._id],
+        url: `/post/${post._id}`,
+        content: post.content,
+        image: post.images[0]?.url,
+      };
+      dispatch(createNotify({ msg, auth, socket }));
     } catch (err: any) {
       showToastMessage(dispatch, err.response.data.msg, 'error');
     }
@@ -129,7 +144,6 @@ export const deleteComment =
     socket: any;
   }) =>
   async (dispatch: any) => {
-    console.log({ comment, post, auth });
     // const newComment = {
     //   ...comment,
     //   likes: DeleteData(comment.likes, auth.user._id),
@@ -155,6 +169,15 @@ export const deleteComment =
     try {
       deleteArr.forEach((item) => {
         deleteDataAPI(`comment/${item._id}`, auth.token);
+        const msg = {
+          id: item.user._id,
+          text: comment.reply
+            ? 'mentioned you in a comment.'
+            : 'has commented on your post.',
+          recipients: comment.reply ? [comment.tag._id] : [post.user._id],
+          url: `/post/${post._id}`,
+        };
+        dispatch(removeNotify({ msg, auth, socket }));
       });
     } catch (err: any) {
       showToastMessage(dispatch, err.response.data.msg, 'error');

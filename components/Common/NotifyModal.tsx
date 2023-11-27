@@ -1,20 +1,24 @@
 /* eslint-disable @next/next/no-img-element */
 import { useAppDispatch, useAppSelector } from '@/store/hook';
+import { deleteAllNotifies, isReadNotify } from '@/store/notify/notifyAction';
+import { updateSoundRedux } from '@/store/notify/notifySlice';
 import { NotificationsActiveOutlined } from '@mui/icons-material';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
-import { Badge, IconButton, Popover } from '@mui/material';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import Avatar from './Avatar';
+import { Badge, IconButton, Popover } from '@mui/material';
 import moment from 'moment';
-import { useState } from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
+import Avatar from './Avatar';
+import { useTranslation } from 'react-i18next';
 const NotifyModal = () => {
   const [anchorEl, setAnchorEl] = useState<any>(null);
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state: any) => state.authSlice.auth);
+  const { t } = useTranslation();
 
   const notify = useAppSelector((state: any) => state.notifySlice);
+  const length = notify?.data?.filter((item: any) => !item.isRead);
+
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
@@ -24,27 +28,28 @@ const NotifyModal = () => {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
   const handleSound = () => {
-    // dispatch({type: NOTIFY_TYPES.UPDATE_SOUND, payload: !notify.sound})
+    dispatch(updateSoundRedux(!notify.sound));
   };
   const handleDeleteAll = () => {
     const newArr = notify.data.filter((item: any) => item.isRead === false);
-    // if (newArr.length === 0) return dispatch(deleteAllNotifies(auth.token));
+
+    if (newArr.length === 0) return dispatch(deleteAllNotifies({ auth }));
 
     if (
       window.confirm(
         `You have ${newArr.length} unread notices. Are you sure you want to delete all?`
       )
     ) {
-      // return dispatch(deleteAllNotifies(auth.token));
+      return dispatch(deleteAllNotifies({ auth }));
     }
   };
   const handleIsRead = (msg: any) => {
-    // dispatch(isReadNotify({msg, auth}))
+    dispatch(isReadNotify({ msg, auth }));
   };
   return (
     <div>
       <IconButton onClick={handleClick}>
-        <Badge badgeContent={notify?.data?.length || 0} color="error">
+        <Badge badgeContent={length?.length || 0} color="error">
           <NotificationsActiveOutlined />
         </Badge>
       </IconButton>
@@ -60,12 +65,7 @@ const NotifyModal = () => {
       >
         <div className="min-w-[400px] py-3 px-2">
           <div className="flex items-center justify-between px-3">
-            <h1 className="text-[25px] font-bold">Notifications</h1>
-            {notify.sound ? (
-              <NotificationsIcon onClick={handleSound} />
-            ) : (
-              <NotificationsOffIcon onClick={handleSound} />
-            )}
+            <h1 className="text-[25px] font-bold">{t('notifications')}</h1>
           </div>
           <hr className="mt-0" />
           {notify.data.length === 0 && (
@@ -77,7 +77,9 @@ const NotifyModal = () => {
             {notify.data.map((msg: any, index: any) => (
               <div
                 key={index}
-                className="px-2 py-3 rounded-md hover:bg-gray-200"
+                className={`px-2 py-3 rounded-md hover:bg-gray-200 ${
+                  msg.isRead && ' rounded-md bg-gray-200 opacity-50'
+                }`}
               >
                 <Link
                   href={`${msg?.url}`}
@@ -115,10 +117,10 @@ const NotifyModal = () => {
           <hr className="my-1" />
 
           <div
-            className="text-right text-danger mr-2 cursor-pointer"
+            className="text-right text-red-500 mr-2 cursor-pointer"
             onClick={handleDeleteAll}
           >
-            Delete All
+            {t('deleteAll')}
           </div>
         </div>
       </Popover>

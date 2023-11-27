@@ -2,20 +2,21 @@ import { useAppSelector } from '@/store/hook';
 import ExploreIcon from '@mui/icons-material/Explore';
 import FeedIcon from '@mui/icons-material/Feed';
 import ForumIcon from '@mui/icons-material/Forum';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
+import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
 import { Avatar, Button, Skeleton, Tooltip } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useRouter as routerLink } from 'next/router';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 interface NavProps {
   isClosedSlideBar: boolean;
   setIsClosedSlideBar: any;
 }
 const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
   const auth = useAppSelector((state) => state.authSlice.auth);
+  const { t, i18n } = useTranslation();
 
   const { data: session }: any = useSession();
 
@@ -164,7 +165,7 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
     },
     {
       id: 'discover',
-      name: 'Discover',
+      name: `${t('discover tab')}`,
       icon: <ExploreIcon />,
       selected: routerMain.asPath.replace('/', '') === 'discover',
       component: <></>,
@@ -179,21 +180,29 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
     //   href: '/group',
     // },
     {
-      id: 'messages',
+      id: 'savedposts',
       name: 'Saved Posts',
       icon: <BookmarkAddedIcon />,
       selected: false,
       component: <></>,
       href: '/savedposts',
     },
-    // {
-    //   id: 'shop',
-    //   name: 'Shop',
-    //   icon: <ShoppingBasketIcon />,
-    //   selected: false,
-    //   component: <></>,
-    //   href: '/shop',
-    // },
+    {
+      id: 'messages',
+      name: 'Messages',
+      icon: <ForumIcon />,
+      selected: false,
+      component: <></>,
+      href: '/messages',
+    },
+    {
+      id: 'PH-GPT',
+      name: 'PH-GPT',
+      icon: <PsychologyAltIcon />,
+      selected: false,
+      component: <></>,
+      href: '/ph-gpt',
+    },
   ]);
   const handleSelectedListFeature = (value: any) => {
     setListFeature(
@@ -205,6 +214,16 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
       })
     );
   };
+  useEffect(() => {
+    setListFeature((prevListFeature) => {
+      return prevListFeature.map((feature) => {
+        return {
+          ...feature,
+          name: t(feature.id),
+        };
+      });
+    });
+  }, [i18n.language, t]);
 
   return (
     <nav

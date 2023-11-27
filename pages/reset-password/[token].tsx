@@ -20,6 +20,7 @@ import { sxTextField } from '@/utils/helper/style';
 import { checkToken, resetPassword } from '@/store/auth/authAction';
 import dynamic from 'next/dynamic';
 import { showLoading } from '@/store/loading/loadingSlice';
+import { useTranslation } from 'react-i18next';
 const LayoutAuthen = dynamic(() => import('@/components/layouts/LayoutAuth'), {
   ssr: false,
 });
@@ -38,7 +39,7 @@ const ResetPassword = () => {
 
   const url = 'reset-password/';
   const { token } = router.query;
-
+  const { t } = useTranslation();
   const token1 = asPath.slice(asPath.indexOf(url), -1).replace(url, '');
 
   const [showTokenExpired, setShowTokenExpired] = useState<boolean>(false);
@@ -221,7 +222,7 @@ const ResetPassword = () => {
                         sx={{ '&:hover': { backgroundColor: '#00ADC3' } }}
                         disabled
                       >
-                        SEND{' '}
+                        {t('send')}
                         <SendIcon fontSize="small" style={{ marginLeft: 5 }} />
                       </Button>
                     ) : (
@@ -231,7 +232,7 @@ const ResetPassword = () => {
                         type="submit"
                         sx={{ '&:hover': { backgroundColor: '#00ADC3' } }}
                       >
-                        SEND{' '}
+                        {t('send')}
                         <SendIcon fontSize="small" style={{ marginLeft: 5 }} />
                       </Button>
                     )}

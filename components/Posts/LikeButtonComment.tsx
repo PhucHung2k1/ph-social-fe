@@ -43,8 +43,6 @@ const LikeButtonComment: React.FC<LikeButtonCommentProps> = ({
 
   const dispatch = useAppDispatch();
   const handleLike = async () => {
-    console.log(comment);
-
     setIsLike(true);
     await dispatch(likeComment({ comment, post, auth, socket }));
     // await dispatch(likePost({ post, auth }));

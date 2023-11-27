@@ -4,6 +4,7 @@ import {
   arrFeelingItems,
 } from '@/store/globalTypes';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
+import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined';
 import { showLoading } from '@/store/loading/loadingSlice';
 import { showToastMessage } from '@/utils/helper/showToastMessage';
 import { Clear, Search } from '@mui/icons-material';
@@ -31,6 +32,8 @@ import { useDebounce } from 'usehooks-ts';
 import AvatarItemCreatePost from './AvatarItemCreatePost';
 import { setIsChange } from '@/store/user/userSlice';
 import { updatePost } from '@/store/post/postAction';
+import Icons from '../Icon';
+import { useTranslation } from 'react-i18next';
 interface UserData {
   avatar: string;
   username: string;
@@ -91,17 +94,18 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
   setOpen,
   item,
 }) => {
-  const [isLoadingModal, setIsLoadingModal] = useState(false);
   const [feeling, setFeeling] = useState<FeelingItem>({
     avt: '',
     label: '',
     activity: false,
   });
+  const socket = useAppSelector((state: any) => state.socketSlice.socket);
 
   const [valueTab, setValueTab] = useState(0);
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
     setValueTab(newValue);
   };
+  const [content, setContent] = useState('');
   const [valueSearch, setValueSearch] = useState<any>('');
   const debouncedValue = useDebounce<string>(valueSearch, 500);
   const style = {
@@ -117,12 +121,13 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
 
   const [images, setImages] = useState<any>([item?.images]);
   const [typeModal, setTypeModal] = useState('edit');
-
+  const { t } = useTranslation();
   const {
     register,
     formState: { errors },
     handleSubmit,
     setValue,
+    getValues,
   } = useForm<any>({
     defaultValues: {
       content: item?.content,
@@ -164,7 +169,7 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
 
     dispatch(
       updatePost({
-        content: values?.content,
+        content: content,
         images,
         auth,
         postId: item?._id,
@@ -175,7 +180,7 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
     )
       .then((res: any) => {
         if (res?.status === 200) {
-          setIsLoadingModal(false);
+          // setIsLoadingModal(false);
         }
       })
 
@@ -183,9 +188,10 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
         setOpen(false);
         dispatch(showLoading(false));
         setImages([]);
+        setContent('');
         setValue('content', '');
         dispatch(setIsChange());
-        setIsLoadingModal(false);
+        // setIsLoadingModal(false);
       });
     setOpen(false);
   };
@@ -193,7 +199,8 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
   useEffect(() => {
     if (item?.images && item?.content) {
       setImages(item?.images);
-      setValue('content', item?.content);
+      // setValue('content', item?.content);
+      setContent(item?.content);
     }
     if (item?.feelingImage !== '') {
       setFeeling({
@@ -214,6 +221,19 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
   const handleClearInput = () => {
     setValueSearch('');
   };
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImages([...images, file]);
+    }
+  };
+
+  // useEffect(() => {
+  //   if (status.onEdit) {
+  //     setContent(status.content);
+  //     setImages(status.images);
+  //   }
+  // }, []);
 
   return (
     <>
@@ -224,10 +244,10 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
         aria-describedby="modal-modal-description"
       >
         {typeModal === 'edit' ? (
-          <Box sx={style} className="w-[300px] sm:w-[500px]">
+          <Box sx={style} className="w-[500px]">
             <div className="flex relative items-center justify-center ">
               <div className="text-lg flex items-center justify-center pb-2 font-semibold border-b border-gray-300 w-full">
-                Edit Post
+                {t('editPost')}
               </div>
               <div
                 className="absolute right-[-10px] top-[-10px] text-sm "
@@ -295,11 +315,17 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
             <form onSubmit={handleSubmit(handleUpdatePost)}>
               <div className="status_body">
                 <textarea
-                  {...register('content', {})}
-                  placeholder={`${auth?.user?.username}, what are you thinking ?`}
-                  defaultValue={item?.content}
-                  style={{ resize: 'vertical' }}
-                ></textarea>
+                  name="content"
+                  value={content}
+                  placeholder={`${auth?.user?.username}, ${t(
+                    'what is your mind'
+                  )}?`}
+                  onChange={(e: any) => setContent(e.target.value)}
+                />
+                <div className="flex">
+                  <div className="flex-1"></div>
+                  <Icons setContent={setContent} content={content} />
+                </div>
                 <div className="show_images">
                   {images.map((img: any, index: any) => (
                     <AvatarItemCreatePost
@@ -313,6 +339,25 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
 
                 <div className="input_images">
                   <>
+                    <div className="file_upload !mx-0 ">
+                      <OndemandVideoOutlinedIcon />
+
+                      <Tooltip
+                        title="Video"
+                        placement="top"
+                        className="cursor-pointer"
+                      >
+                        <input
+                          type="file"
+                          name="video"
+                          id="file"
+                          multiple
+                          accept="video/*"
+                          onChange={handleVideoChange}
+                          className="cursor-pointer w-[30px] "
+                        />
+                      </Tooltip>
+                    </div>
                     <div className="file_upload">
                       <PhotoOutlinedIcon />
 
@@ -404,7 +449,7 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
                 <div className="flex flex-col gap-5">
                   <TextField
                     variant="outlined"
-                    placeholder="Search..."
+                    placeholder={`${t('search')}`}
                     InputProps={{
                       style: {
                         height: '40px',
@@ -463,7 +508,7 @@ const ModalEditPost: React.FC<ModalEditPostProps> = ({
                 <div className="flex flex-col gap-5">
                   <TextField
                     variant="outlined"
-                    placeholder="Search..."
+                    placeholder={`${t('search')}`}
                     InputProps={{
                       style: {
                         height: '40px',

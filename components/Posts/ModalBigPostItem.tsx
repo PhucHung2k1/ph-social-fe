@@ -6,7 +6,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import ClearIcon from '@mui/icons-material/Clear';
-
+import CopyAllIcon from '@mui/icons-material/CopyAll';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -23,7 +23,7 @@ import {
 import React, { useEffect, useState } from 'react';
 
 import { createComment } from '@/store/comment/commentAction';
-import { BASE_URL } from '@/utils/config';
+import { BASE_FE, BASE_URL } from '@/utils/config';
 import moment from 'moment';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
@@ -119,7 +119,7 @@ const ModalBigPostItem: React.FC<ModalBigPostItemProps> = ({
     setOpen(false);
   };
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(`${BASE_URL}/post/${item._id}`);
+    navigator.clipboard.writeText(`${BASE_FE}/post/${item._id}`);
     handleClose();
   };
   const handleCloseCmt = () => {
@@ -278,9 +278,9 @@ const ModalBigPostItem: React.FC<ModalBigPostItemProps> = ({
                 </div>
               )}
 
-              {/* <MenuItem onClick={handleCopyLink} className="h-10">
+              <MenuItem onClick={handleCopyLink} className="h-10">
                 <CopyAllIcon className="mr-2" /> Copy Link
-              </MenuItem> */}
+              </MenuItem>
             </Menu>
           </div>
           <div className="content">

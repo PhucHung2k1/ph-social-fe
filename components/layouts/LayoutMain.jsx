@@ -8,12 +8,15 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import DrawerNav from '../Common/DrawerNav';
-
+import '../../i18n/i18n';
 import Header from '../Common/Header';
 import Nav from '../Common/Nav';
 import { getSocketRedux } from '@/store/socket/socketSlice';
 import SocketClient from '../SocketClient';
 import { getNotifies } from '@/store/notify/notifyAction';
+import CallModal from '../Message/CallModal';
+import { setPeerRedux } from '@/store/peer/peerSlice';
+
 var connectionOptions = {
   transports: ['websocket'],
 };
@@ -25,7 +28,7 @@ var connectionOptions = {
 function LayoutMain({ children }) {
   const auth = useAppSelector((state) => state.authSlice.auth);
   const socket = useAppSelector((state) => state.socketSlice.socket);
-
+  const call = useAppSelector((state) => state.callSlice.call);
   const { data: session } = useSession();
   const isChangeRedux = useAppSelector((state) => state.userSlice.isChange);
   const [expanded, setExpanded] = useState(true);
@@ -82,6 +85,16 @@ function LayoutMain({ children }) {
     dispatch(getSocketRedux(socket));
     return () => socket.close();
   }, [dispatch]);
+  useEffect(() => {
+    import('peerjs').then(({ default: Peer }) => {
+      const newPeer = new Peer(undefined, {
+        path: '/',
+        secure: true,
+      });
+
+      dispatch(setPeerRedux(newPeer));
+    });
+  }, [dispatch]);
 
   // useEffect(() => {
   //   let isDispatched = false;
@@ -113,7 +126,6 @@ function LayoutMain({ children }) {
     <div>
       <Header />
       <div className="flex">
-        {/* {router.pathname === '/' && ( */}
         <>
           <div className="hidden lg:block">
             <Nav
@@ -143,6 +155,8 @@ function LayoutMain({ children }) {
           {/* Nội dung có thể cuộn */}
           {children}
           {auth?.token && <SocketClient />}
+          {call && <CallModal />}
+
           {/* <button
             onClick={() => {
               socket?.emit('joinUser', auth?.user?._id);

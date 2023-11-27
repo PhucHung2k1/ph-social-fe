@@ -24,6 +24,7 @@ import {
 } from '@/store/auth/authAction';
 import { showLoading } from '@/store/loading/loadingSlice';
 import dynamic from 'next/dynamic';
+import { useTranslation } from 'react-i18next';
 const LayoutAuthen = dynamic(() => import('@/components/layouts/LayoutAuth'), {
   ssr: false,
 });
@@ -44,6 +45,7 @@ const ForgotPassword = () => {
     emailName: '',
     emailStatus: 'idle', // existed , available
   });
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const validateEmail = debounce(async (emailValue: string) => {
@@ -182,7 +184,7 @@ const ForgotPassword = () => {
                       sx={{ '&:hover': { backgroundColor: '#00ADC3' } }}
                       disabled={!!errors.email}
                     >
-                      SEND{' '}
+                      {t('send')}
                       <SendIcon fontSize="small" style={{ marginLeft: 5 }} />
                     </Button>
                   </FormControl>

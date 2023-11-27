@@ -33,6 +33,20 @@ export default function HomeScreen() {
     }
   }, [auth, auth.token, dispatch]);
 
+  // useEffect(() => {
+  //   import('peerjs').then(({ default: Peer }) => {
+  //     // Do your stuff here
+  //     const newPeer = new Peer(undefined, {
+  //       path: '/',
+  //       secure: true,
+  //     });
+  //     console.log(
+  //       '🚀 ~ file: LayoutMain.jsx:91 ~ useEffect ~ newPeer:',
+  //       newPeer
+  //     );
+  //   });
+  // }, []);
+
   return (
     <LayoutMain>
       <div className="   bg-main-home min-h-screen ">
@@ -41,11 +55,11 @@ export default function HomeScreen() {
           spacing={2}
           className="py-5 md2:px-80 md1:px-44 sm:px-2 px-2 "
         >
-          <Grid xs={12} md={8} item>
+          <Grid xs={12} md={7.5} item>
             {auth?.token && <Status />}
             <Posts />
           </Grid>
-          <Grid xs={12} md={4} item>
+          <Grid xs={7.5} md={4.5} item>
             <RightSideBar />
           </Grid>
         </Grid>

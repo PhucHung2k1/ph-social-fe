@@ -2,6 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { Box, IconButton, Modal } from '@mui/material';
 import React from 'react';
 import UserItemModal from './UserItemModal';
+import { useTranslation } from 'react-i18next';
 interface ModalFollowersProps {
   users: Array<any>;
   open: any;
@@ -25,6 +26,7 @@ const ModalFollowers: React.FC<ModalFollowersProps> = ({
   const handleClose = () => {
     setOpen(false);
   };
+  const { t } = useTranslation();
   return (
     <Modal
       open={open}
@@ -35,7 +37,7 @@ const ModalFollowers: React.FC<ModalFollowersProps> = ({
       <Box sx={style}>
         <div className="flex relative items-center justify-center ">
           <div className="text-lg flex items-center justify-center pb-2 font-semibold border-b border-gray-300 w-full">
-            Followers
+            {t('follower')}
           </div>
           <div
             className="absolute right-[-10px] top-[-10px] text-sm "

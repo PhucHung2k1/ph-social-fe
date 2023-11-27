@@ -3,6 +3,7 @@ import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRig
 import React, { useState, useRef } from 'react';
 import CommentItemCard from './CommentItemCard';
 import { PostData } from './PostItem';
+import { useTranslation } from 'react-i18next';
 
 interface CommentProps {
   content: string;
@@ -32,6 +33,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 }) => {
   const [showAllReply, setShowAllReply] = useState(false);
   const itemRef = useRef<any>(comment);
+  const { t } = useTranslation();
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -53,7 +55,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                     }}
                   >
                     <SubdirectoryArrowRightIcon fontSize="small" />
-                    {repCm?.length} Replies
+                    {repCm?.length} {t('replies')}
                   </div>
                 ) : (
                   <>

@@ -13,6 +13,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import LikeButtonComment from './LikeButtonComment';
 import { PostData } from './PostItem';
+import Icons from '../Icon';
+import { useTranslation } from 'react-i18next';
 
 interface CommentProps {
   content: string;
@@ -54,7 +56,9 @@ const CommentItemCard: React.FC<CommentItemCardProps> = ({
   } = useForm<any>();
 
   const [readMore, setReadMore] = useState(false);
-  const valueComment = watch('comment');
+  const { t } = useTranslation();
+  const [content, setContent] = useState('');
+  const [contentRep, setContentRep] = useState('');
   const [onReply, setOnReply] = useState<any>(false);
   const [dataReply, setDataReply] = useState<any>({});
   const socket = useAppSelector((state) => state.socketSlice.socket);
@@ -77,12 +81,12 @@ const CommentItemCard: React.FC<CommentItemCardProps> = ({
     setAnchorEl(event.currentTarget);
   };
   const handleUpdateComment = (values: any) => {
-    if (comment?.content !== valueComment) {
+    if (comment?.content !== content) {
       dispatch(
         updateComment({
           comment: comment,
           post,
-          content: valueComment,
+          content,
           auth,
           socket,
         })
@@ -94,7 +98,6 @@ const CommentItemCard: React.FC<CommentItemCardProps> = ({
   };
   const handleKeyPress = (e: any) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      // Prevent the default Enter key behavior (line break) in the textarea
       e.preventDefault();
       // Trigger the form submission or any other action you want
       handleSubmit(handleReplyComment)();
@@ -109,15 +112,15 @@ const CommentItemCard: React.FC<CommentItemCardProps> = ({
     setShowAllReply(true);
   };
   const handleReplyComment = (values: any) => {
-    if (values?.replyData.trim() === '') {
+    if (contentRep.trim() === '') {
       if (setOnReply) return setOnReply(false);
       return;
     }
 
-    setValue('replyData', '');
+    setContentRep('');
 
     const newComment = {
-      content: values?.replyData,
+      content: contentRep,
       likes: [],
       user: auth?.user,
       createdAt: new Date().toISOString(),
@@ -131,14 +134,15 @@ const CommentItemCard: React.FC<CommentItemCardProps> = ({
   };
 
   const handleRemove = () => {
-    console.log('comment', comment);
-    console.log('auth', auth);
-
     if (post.user._id === auth.user._id || comment.user._id === auth.user._id) {
       dispatch(deleteComment({ post, auth, comment, socket }));
     }
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    setContent(comment?.content);
+  }, [comment?.content]);
 
   return (
     <>
@@ -173,23 +177,32 @@ const CommentItemCard: React.FC<CommentItemCardProps> = ({
                         {onEdit ? (
                           <div className="flex items-start">
                             {comment?.tag?.username && (
-                              <div className="text-blue-600 text-sm">
+                              <div className="text-blue-600 text-sm mt-[8px]">
                                 @{comment?.tag?.username}
                               </div>
                             )}
                             <textarea
-                              {...register('comment', {})}
+                              // {...register('comment', {})}
+                              value={content}
                               className=" pt-2 bg-main-home min-h-10 resize-verstical !w-full border-none outline-none text-sm "
-                              placeholder="Write a comment..."
+                              placeholder={`${t('writeAComment')}`}
                               rows={5}
                               defaultValue={comment?.content}
                               autoFocus
+                              onChange={(e: any) => setContent(e.target.value)}
                             />
+                            <div className="flex items-center justify-center mt-6">
+                              <div className="flex-1"></div>
+                              <Icons
+                                setContent={setContent}
+                                content={content}
+                              />
+                            </div>
                           </div>
                         ) : (
                           <div className="flex gap-2 items-center">
                             {comment?.tag && (
-                              <div className="text-blue-600 text-sm">
+                              <div className="text-blue-600 text-sm ">
                                 @{comment?.tag?.username}
                               </div>
                             )}
@@ -284,36 +297,36 @@ const CommentItemCard: React.FC<CommentItemCardProps> = ({
                                   onClick={() => handleEditComment(comment)}
                                   className="h-10 w-44"
                                 >
-                                  Edit
+                                  {t('edit')}
                                 </MenuItem>
                                 <MenuItem
                                   onClick={handleRemove}
                                   className="h-10"
                                 >
-                                  Delete
+                                  {t('delete')}
                                 </MenuItem>
                               </div>
                             ) : (
                               <MenuItem onClick={handleRemove} className="h-10">
-                                Delete
+                                {t('delete')}
                               </MenuItem>
                             )
                           ) : (
                             comment?.user?._id === auth.user._id && (
-                              <>
+                              <div>
                                 <MenuItem
                                   onClick={() => handleEditComment(comment)}
                                   className="h-10 w-44"
                                 >
-                                  Edit
+                                  {t('edit')}
                                 </MenuItem>
                                 <MenuItem
                                   onClick={handleRemove}
                                   className="h-10"
                                 >
-                                  Delete
+                                  {t('delete')}
                                 </MenuItem>
-                              </>
+                              </div>
                             )
                           )}
                         </Menu>
@@ -331,13 +344,13 @@ const CommentItemCard: React.FC<CommentItemCardProps> = ({
                 ) : (
                   <div className="flex gap-2 px-3 text-xs cursor-pointer">
                     <div className="text-text-gray-bold font-semibold">
-                      {comment?.likes?.length} likes
+                      {comment?.likes?.length} {t('likes')}
                     </div>
                     <div
                       className="text-text-gray-bold font-semibold"
                       onClick={handleReply}
                     >
-                      {!onReply ? 'reply' : 'cancel'}
+                      {!onReply ? `${t('reply')}` : `${t('cancel')}`}
                     </div>
                     {onEdit && (
                       <>
@@ -392,16 +405,19 @@ const CommentItemCard: React.FC<CommentItemCardProps> = ({
                     @{dataReply?.user?.username}
                   </div>
                   <textarea
-                    {...register('replyData', {})}
-                    className=" pt-3 bg-main-home min-h-10 resize-verstical h-10 !w-full border-none outline-none text-sm "
+                    // {...register('replyData', {})}
+                    value={contentRep}
+                    onChange={(e: any) => setContentRep(e.target.value)}
+                    className=" pt-3 bg-main-home min-h-10 resize-vertical h-10 !w-full border-none outline-none text-sm "
                     placeholder="Write a reply..."
                     rows={1}
                   />
+                  <Icons setContent={setContentRep} content={contentRep} />
                   <button
                     className=" text-sm text-blue-600 font-semibold"
                     type="submit"
                   >
-                    Post
+                    {t('post')}
                   </button>
                 </form>
               </div>

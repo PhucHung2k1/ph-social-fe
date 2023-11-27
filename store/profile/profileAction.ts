@@ -1,9 +1,7 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { AuthService, IRegister } from '@/services/auth.service';
 import { showToastMessage } from '@/utils/helper/showToastMessage';
-import { ProfileService } from '@/services/profile.service';
 
 import { getDataAPI, patchDataAPI } from '@/utils/fetchData';
+import { setAuth } from '../auth/authSlice';
 import { DeleteData } from '../globalTypes';
 import {
   followUser,
@@ -12,8 +10,7 @@ import {
   getUser,
   unfollowUser,
 } from './profileSlice';
-import { setIsChange } from '../user/userSlice';
-import { setAuth } from '../auth/authSlice';
+import { createNotify, removeNotify } from '../notify/notifyAction';
 
 export const follow =
   ({ users, user, auth, socket }: any) =>
@@ -42,9 +39,13 @@ export const follow =
 
     try {
       await patchDataAPI(`user/${user._id}/follow`, null, auth.token);
-      // dispatch(setAuth(res?.data?.userUpdateNew));
-      // return res;
-      // dispatch(setAuth(res?.data?.newUser));
+      const msg = {
+        id: auth?.user?._id,
+        text: 'has started to follow you',
+        recipients: [newUser._id],
+        url: `/profile/${auth.user._id}`,
+      };
+      dispatch(createNotify({ msg, auth, socket }));
     } catch (err: any) {
       // dispatch({
       //   type: GLOBALTYPES.ALERT,
@@ -91,6 +92,14 @@ export const unfollow =
 
     try {
       await patchDataAPI(`user/${user._id}/unfollow`, null, auth.token);
+
+      const msg = {
+        id: auth?.user?._id,
+        text: 'has started to follow you',
+        recipients: [newUser._id],
+        url: `/profile/${auth.user._id}`,
+      };
+      dispatch(removeNotify({ msg, auth, socket }));
     } catch (err: any) {
       showToastMessage(dispatch, err.response.data.msg, 'error');
     }

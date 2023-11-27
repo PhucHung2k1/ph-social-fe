@@ -114,9 +114,7 @@ const MyProfile = () => {
   const onSubmit = async (values: IFormInput) => {
     console.log(values);
     const body = { id: userData._id, ...values, sex };
-    dispatch(updateProfile(body)).then((res) => {
-      console.log(res);
-    });
+    dispatch(updateProfile(body)).then((res) => {});
     handleClose();
   };
 

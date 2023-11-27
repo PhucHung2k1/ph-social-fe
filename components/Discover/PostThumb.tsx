@@ -19,7 +19,7 @@ const PostThumb: React.FC<PostThumbProps> = ({ posts, result }) => {
   const socket = useAppSelector((state) => state.socketSlice.socket);
   const auth = useAppSelector((state) => state.authSlice.auth);
   const dispatch = useAppDispatch();
-  const [openModalBig, setOpenModalBig] = useState(false);
+
   const [isLike, setIsLike] = useState(false);
 
   const handleLike = () => {
@@ -49,7 +49,7 @@ const PostThumb: React.FC<PostThumbProps> = ({ posts, result }) => {
             </div>
           ))}
       </div>
-      <ModalBigPostItem
+      {/* <ModalBigPostItem
         open={openModalBig}
         setOpen={setOpenModalBig}
         item={selectedItem}
@@ -57,7 +57,7 @@ const PostThumb: React.FC<PostThumbProps> = ({ posts, result }) => {
         setIsLike={setIsLike}
         handleLike={handleLike}
         handleUnLike={handleUnLike}
-      />
+      /> */}
     </>
   );
 };

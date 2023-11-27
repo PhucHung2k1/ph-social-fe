@@ -1,14 +1,31 @@
-import Image from 'next/image';
-import React, { useEffect } from 'react';
-import { Paper, Button } from '@mui/material';
-import Carousel from 'react-material-ui-carousel';
-import Head from 'next/head';
-import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
-import { showToastMessage } from '@/utils/helper/showToastMessage';
 import { useAppDispatch } from '@/store/hook';
+import { showToastMessage } from '@/utils/helper/showToastMessage';
+import { signIn, useSession } from 'next-auth/react';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import {
+  Avatar,
+  Button,
+  CircularProgress,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Select,
+  Skeleton,
+  Tab,
+  Tabs,
+  TextField,
+  styled,
+} from '@mui/material';
 import styles from '../../styles/Home.module.css';
-import PrevLoader from '../Loading/PreLoader';
+import { useTranslation } from 'react-i18next';
 export interface LayoutAuthenProps {
   children: React.ReactNode;
   type?: string;
@@ -21,9 +38,10 @@ export default function LayoutAuthen({
   titlePage = '',
 }: LayoutAuthenProps) {
   const { data } = useSession();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
-
+  const [language, setLanguage] = useState<any>('en');
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const firstLogin = localStorage.getItem('firstLogin');
@@ -46,6 +64,11 @@ export default function LayoutAuthen({
         }
       })
       .finally(() => {});
+  };
+  const handleChange = (event: any) => {
+    setLanguage(event.target.value);
+    i18n.changeLanguage(event.target.value);
+    localStorage.setItem('lng', event.target.value);
   };
 
   return (
@@ -78,7 +101,6 @@ export default function LayoutAuthen({
         </div>
         <div className="w-full lg:w-1/2  overflow-auto bg-white flex flex-col items-center justify-between">
           <div className="w-[80%] flex flex-col items-center ">
-            {/* <PrevLoader /> */}
             <div className="flex flex-col items-center justify-center  w-[550px]">
               <>
                 <div className="flex h-[80px] w-[80px] gap-2 items-center justify-center rounded-3xl ">
@@ -105,6 +127,19 @@ export default function LayoutAuthen({
               <div className="mt-10 w-[100%] flex flex-col gap-5 flex-1">
                 {children}
               </div>
+              {/* <FormControl className="w-[150px] ">
+                <InputLabel id="language-label">Language</InputLabel>
+                <Select
+                  labelId="language-label"
+                  id="language-select"
+                  value={language}
+                  onChange={handleChange}
+                  label="Language"
+                >
+                  <MenuItem value="en">English</MenuItem>
+                  <MenuItem value="vi">Tiếng Việt</MenuItem>
+                </Select>
+              </FormControl> */}
             </div>
           </div>
 

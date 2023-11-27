@@ -1,11 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import FollowBtn from '@/components/Common/FollowBtn';
+import Status from '@/components/HomePage/Status';
+import PostsProfile from '@/components/Profile/PostsProfile';
+import ModalFollowers from '@/components/User/ModalFollowers';
+import ModalFollowing from '@/components/User/ModalFollowing';
 import LayoutMain from '@/components/layouts/LayoutMain';
 import { formatNumber, removeDuplicates } from '@/store/globalTypes';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import Face5OutlinedIcon from '@mui/icons-material/Face5Outlined';
+import { showLoading } from '@/store/loading/loadingSlice';
+import { addUser } from '@/store/message/messageAction';
+import { getPosts } from '@/store/post/postAction';
+import { getProfileUsers } from '@/store/profile/profileAction';
 import {
   getUserById,
   updateAvatar,
@@ -13,11 +18,19 @@ import {
   updateProfile,
   updateStory,
 } from '@/store/user/userAction';
+import { showToastMessage } from '@/utils/helper/showToastMessage';
+import { sxTextField } from '@/utils/helper/style';
+import { checkImage } from '@/utils/imageUpload';
+import { ErrorMessage } from '@hookform/error-message';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import ClearIcon from '@mui/icons-material/Clear';
 import EmailIcon from '@mui/icons-material/Email';
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import Face5OutlinedIcon from '@mui/icons-material/Face5Outlined';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import MessageIcon from '@mui/icons-material/Message';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import PhoneIcon from '@mui/icons-material/Phone';
 import WebIcon from '@mui/icons-material/Web';
 import {
@@ -40,19 +53,8 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { sxTextField } from '@/utils/helper/style';
-import { ErrorMessage } from '@hookform/error-message';
 import { useForm } from 'react-hook-form';
-import { checkImage } from '@/utils/imageUpload';
-import { showToastMessage } from '@/utils/helper/showToastMessage';
-import { setAuth } from '@/store/auth/authSlice';
-import { showLoading } from '@/store/loading/loadingSlice';
-import ModalFollowers from '@/components/User/ModalFollowers';
-import ModalFollowing from '@/components/User/ModalFollowing';
-import { getProfileUsers } from '@/store/profile/profileAction';
-import PostsProfile from '@/components/Profile/PostsProfile';
-import Status from '@/components/HomePage/Status';
-import { getPosts } from '@/store/post/postAction';
+import { useTranslation } from 'react-i18next';
 interface IFormInput {
   fullname: string;
   mobilephone: string;
@@ -72,7 +74,7 @@ const style = {
 };
 const ProfileID = () => {
   const { data: session }: any = useSession();
-
+  const message = useAppSelector((state) => state.messageSlice);
   const router = useRouter();
   const profile = useAppSelector((state) => state.profileSlice);
   const [sex, setSex] = useState('');
@@ -129,7 +131,7 @@ const ProfileID = () => {
   };
   const [selectedImage, setSelectedImage] = useState<any>();
   const [selectedImageCover, setSelectedImageCover] = useState<any>();
-
+  const { t, i18n } = useTranslation();
   const newArray = removeDuplicates(profile.users, '_id');
   const [openStory, setOpenStory] = useState(false);
   const handleOpenStory = () => {
@@ -165,7 +167,6 @@ const ProfileID = () => {
     } else {
       dispatch(getUserById({ users: profile.users, id: profileId, auth })).then(
         (res) => {
-          console.log(res);
           if (res?.payload?.status === 400) {
             router.push('/login');
           }
@@ -284,6 +285,11 @@ const ProfileID = () => {
       clearTimeout(timeoutId);
     };
   }, [dispatch, auth?.token, isChangeRedux]);
+
+  const handleAddUser = (user: any) => {
+    dispatch(addUser({ user, message }));
+    router.push(`/messages/${user._id}`);
+  };
 
   return (
     <LayoutMain>
@@ -546,10 +552,12 @@ const ProfileID = () => {
             <div className="flex w-full justify-between">
               <div className="w-1/3 flex flex-col gap-4 items-center justify-center">
                 <div className="flex flex-row items-center gap-5 w-full justify-center">
-                  <div className="capitalize">Role: {userData?.role}</div>
+                  <div className="capitalize">
+                    {t('role')}: {userData?.role}
+                  </div>
                 </div>
                 <div className="flex items-center justify-center gap-5 mt-2">
-                  <div className="flex h-[40px] w-[40px] items-center justify-center rounded-3xl bg-[#F4F4F8]">
+                  {/* <div className="flex h-[40px] w-[40px] items-center justify-center rounded-3xl bg-[#F4F4F8]">
                     <Image
                       src="/images/Authentication/icongoogle.svg"
                       alt="fbIcon"
@@ -584,6 +592,33 @@ const ProfileID = () => {
                       height={16}
                       className="w-[60%] cursor-pointer"
                     />
+                  </div> */}
+                  <div className="flex items-center gap-4 mt-2">
+                    {profileId === auth?.user?._id ? (
+                      <div className="flex gap-3 !items-center !justify-center">
+                        <Button
+                          variant="outlined"
+                          onClick={handleOpen}
+                          className="!bg-mango-primary-blue !text-white !hover:bg-mango-primary-blue"
+                        >
+                          {t('editProfile')}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-3 !items-center !justify-center">
+                        <FollowBtn user={userData} />
+                        <Button
+                          variant="outlined"
+                          className={
+                            '!bg-blue-500 w-28 !text-white hover:opacity-75' +
+                            ' w-28'
+                          }
+                          onClick={() => handleAddUser(userData)}
+                        >
+                          Messenger
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -634,27 +669,18 @@ const ProfileID = () => {
                     <div className="text-sm flex items-center justify-between">
                       <div>{userData?.username || ''}</div>
                     </div>
-                    <div className="flex items-center gap-4 mt-2">
-                      {profileId === auth?.user?._id ? (
-                        <Button
-                          variant="outlined"
-                          onClick={handleOpen}
-                          className="!bg-mango-primary-blue !text-white !hover:bg-mango-primary-blue"
-                        >
-                          Edit Profile
-                        </Button>
-                      ) : (
-                        <FollowBtn user={userData} />
-                      )}
-                    </div>
                   </div>
                 </div>
               </div>
               <div className=" flex items-center">
-                <div className="flex items-center lg:gap-8 sm:gap-4 w-full justify-between">
+                <div
+                  className={`flex items-center lg:gap-8 sm:gap-4 ${
+                    i18n.language === 'vi' && ' !gap-[8px]'
+                  } w-full justify-between`}
+                >
                   <div className="flex flex-col items-center gap-2 ">
                     <div>{dataUserPost?.length}</div>
-                    <div className="cursor-pointer">Posts</div>
+                    <div className="cursor-pointer">{t('posts')}</div>
                   </div>
                   <Divider orientation="vertical" variant="middle" flexItem />
                   <div
@@ -664,7 +690,7 @@ const ProfileID = () => {
                     }}
                   >
                     <div>{formatNumber(userData?.followers?.length)}</div>
-                    <div className="cursor-pointer">Follower</div>
+                    <div className="cursor-pointer">{t('follower')}</div>
                   </div>
                   <Divider orientation="vertical" variant="middle" flexItem />
                   <div
@@ -674,7 +700,7 @@ const ProfileID = () => {
                     }}
                   >
                     <div>{formatNumber(userData?.following?.length)}</div>
-                    <div className="cursor-pointer">Following</div>
+                    <div className="cursor-pointer">{t('following')}</div>
                   </div>
                 </div>
               </div>
@@ -699,7 +725,7 @@ const ProfileID = () => {
                 ) : (
                   <div className="bg-white flex flex-col w-full h-full py-5 px-6 gap-4 ">
                     <div className="font-semibold text-lg tracking-[1px]">
-                      Intro
+                      {t('intro')}
                     </div>
                     <div className="flex gap-2 flex-col items-center justify-center w-full">
                       <>
@@ -717,7 +743,7 @@ const ProfileID = () => {
                                     className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-black normal-case text-sm font-semibold"
                                     onClick={handleOpenStory}
                                   >
-                                    Edit story
+                                    {t('editStory')}
                                   </Button>
                                 </div>
                               )}
@@ -852,7 +878,9 @@ const ProfileID = () => {
                       <div>
                         <AccessTimeFilledIcon />
                       </div>
-                      <div className="">Joined {formattedDate || ''}</div>
+                      <div className="">
+                        {t('joined')} {formattedDate || ''}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -867,11 +895,8 @@ const ProfileID = () => {
                         <div className="bg-white flex flex-col w-full  py-5 px-6 gap-4 h-[600px]">
                           <div className=" text-lg  flex items-center justify-between">
                             <div className="tracking-[1px] font-semibold">
-                              Photos
+                              {t('photos')}
                             </div>
-                            {/* <div className="text-blue-500 text-base cursor-pointer">
-                              See All Photos
-                            </div> */}
                           </div>
                           {isShowLoading ? (
                             <div className="grid gap-4 grid-cols-3">
@@ -917,11 +942,11 @@ const ProfileID = () => {
                         <div className="bg-white flex flex-col w-full  py-5 px-6 gap-4 h-[600px]">
                           <div className=" text-lg  flex flex-col items-start justify-start">
                             <div className="tracking-[1px] font-semibold">
-                              Photos
+                              {t('photos')}
                             </div>
                           </div>
                           <div className="flex items-center  py-10 justify-center font-semibold text-base cursor-pointer">
-                            No Photo
+                            {t('nophoto')}
                           </div>
                         </div>
                       )}

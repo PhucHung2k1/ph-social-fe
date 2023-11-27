@@ -3,6 +3,7 @@ import { follow, unfollow } from '@/store/profile/profileAction';
 import { Button } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface FollowBtnProps {
   user: any;
@@ -15,7 +16,7 @@ const FollowBtn: React.FC<FollowBtnProps> = ({ user, small }) => {
   const [load, setLoad] = useState(false);
   const auth = useAppSelector((state) => state.authSlice.auth);
   const socket = useAppSelector((state: any) => state.socketSlice.socket);
-
+  const { t } = useTranslation();
   const profile = useAppSelector((state) => state.profileSlice);
 
   useEffect(() => {
@@ -60,23 +61,23 @@ const FollowBtn: React.FC<FollowBtnProps> = ({ user, small }) => {
         <Button
           variant="outlined"
           className={
-            '!bg-orange-500 w-28 !text-white hover:opacity-75' +
+            '!bg-orange-500 w-28 !text-white hover:opacity-75 text-[13px]' +
             (small ? ' w-24 normal-case text-base' : ' w-28')
           }
           onClick={handleUnFollow}
         >
-          Unfollow
+          {t('unFollow')}
         </Button>
       ) : (
         <Button
           variant="outlined"
           className={
-            '!bg-blue-500  !text-white hover:opacity-75' +
+            '!bg-blue-500  !text-white hover:opacity-75 text-[13px]' +
             (small ? ' w-24 normal-case text-base' : ' w-28')
           }
           onClick={handleFollow}
         >
-          Follow
+          {t('follow')}
         </Button>
       )}
     </>

@@ -140,6 +140,10 @@ export const updatePost =
       );
 
       dispatch(updatePostRedux(res?.data?.newPost));
+
+      // if (socket) {
+      //   socket.emit('updatePost', res?.data?.newPost);
+      // }
     } catch (err: any) {
       showToastMessage(dispatch, err.response.data.msg, 'error');
     }
@@ -151,9 +155,20 @@ export const likePost =
 
     dispatch(updatePostRedux(newPost));
 
+    socket.emit('likePost', newPost);
+
     try {
       await patchDataAPI(`post/${post._id}/like`, null, auth.token);
-      socket.emit('likePost', newPost);
+
+      const msg = {
+        id: auth?.user?._id,
+        text: 'like your post',
+        recipients: [post.user._id],
+        url: `/post/${post._id}`,
+        content: post.content,
+        image: post.images[0]?.url,
+      };
+      dispatch(createNotify({ msg, auth, socket }));
     } catch (err: any) {
       showToastMessage(dispatch, err.response.data.msg, 'error');
     }
@@ -167,10 +182,20 @@ export const unLikePost =
     };
 
     dispatch(updatePostRedux(newPost));
+    socket.emit('unLikePost', newPost);
 
     try {
       await patchDataAPI(`post/${post._id}/unlike`, null, auth.token);
-      socket.emit('unLikePost', newPost);
+
+      const msg = {
+        id: auth?.user?._id,
+        text: 'like your post',
+        recipients: [post.user._id],
+        url: `/post/${post._id}`,
+        content: post.content,
+        image: post.images[0]?.url,
+      };
+      dispatch(removeNotify({ msg, auth, socket }));
     } catch (err: any) {
       showToastMessage(dispatch, err.response.data.msg, 'error');
     }
@@ -199,7 +224,7 @@ export const savePost =
   ({ post, auth }: { post: PostData; auth: Auth }) =>
   async (dispatch: any) => {
     const newUser = { ...auth.user, saved: [...auth.user.saved, post._id] };
-    // dispatch(deletePostRedux(post));
+
     dispatch(
       setAuth({
         ...auth,
@@ -219,7 +244,7 @@ export const unSavePost =
       ...auth.user,
       saved: auth.user.saved.filter((item) => item !== post._id),
     };
-    // dispatch(deletePostRedux(post));
+
     dispatch(
       setAuth({
         ...auth,

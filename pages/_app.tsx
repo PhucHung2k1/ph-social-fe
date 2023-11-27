@@ -10,7 +10,9 @@ import { Provider } from 'react-redux';
 import PrevLoader from '../components/Loading/PreLoader';
 import { store } from '../store/store';
 import '../styles/global.css';
-
+import { ToastContainer as ToastContainer1 } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../i18n/i18n';
 //Binding events.
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -48,6 +50,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Head>
             {/* <ScrollToTopButton /> */}
             <ToastContainer />
+            <ToastContainer1 />
             <Component {...pageProps} />
             <PrevLoader />
           </main>

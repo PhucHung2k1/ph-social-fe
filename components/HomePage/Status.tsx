@@ -5,11 +5,13 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import ModalCreatePost from './ModalCreatePost';
 import ModalActivityFeeling from './ModalActivityFeeling';
+import { useTranslation } from 'react-i18next';
 
 const Status = () => {
   const auth = useAppSelector((state) => state.authSlice.auth);
   const [open, setOpen] = useState(false);
   const [typeModal, setTypeModal] = useState('create');
+  const { t } = useTranslation();
   return (
     <div className="w-full">
       <ModalCreatePost
@@ -49,7 +51,7 @@ const Status = () => {
               setOpen(true);
             }}
           >
-            What's in your mind, {auth?.user?.fullname}?
+            {t('what is your mind')} {auth?.user?.fullname}?
           </div>
         </div>
         <div className="flex items-center justify-between w-full pt-2 sm:text-base text-sm">
@@ -61,7 +63,7 @@ const Status = () => {
               height={24}
               priority={true}
             />
-            <div>Status</div>
+            <div>{t('status')}</div>
           </div>
           <div className="flex items-center justify-center sm:px-5 px-1  gap-2 h-10 rounded-xl hover:bg-main-home cursor-pointer">
             <Image
@@ -71,7 +73,7 @@ const Status = () => {
               height={24}
               priority={true}
             />
-            <div>Photo/Video</div>
+            <div>{t('photoVideo')}</div>
           </div>
           <div className="flex items-center justify-center sm:px-5 px-1  gap-2 h-10 rounded-xl hover:bg-main-home cursor-pointer">
             <Image
@@ -81,7 +83,7 @@ const Status = () => {
               height={24}
               priority={true}
             />
-            <div>Feeling/Activity</div>
+            <div>{t('feelingActivity')}</div>
           </div>
         </div>
       </div>

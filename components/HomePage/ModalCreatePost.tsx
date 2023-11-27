@@ -34,6 +34,8 @@ import {
   arrFeelingItems,
 } from '@/store/globalTypes';
 import ModalClose from './ModalClose';
+import Icons from '../Icon';
+import { useTranslation } from 'react-i18next';
 
 interface ModalCreatePostProps {
   open: any;
@@ -85,7 +87,8 @@ const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
     activity: false,
   });
   const socket = useAppSelector((state: any) => state.socketSlice.socket);
-
+  const [content, setContent] = useState('');
+  const { t } = useTranslation();
   const [valueSearch, setValueSearch] = useState<any>('');
   const debouncedValue = useDebounce<string>(valueSearch, 500);
   const style = {
@@ -134,15 +137,16 @@ const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
     let newImages: any = [];
 
     files.forEach((file) => {
-      if (!file) return (err = 'File does not exists!');
-      if (file.type !== 'image/jpeg' && file.type !== 'image/png')
-        return (err = 'File format is incorret!');
+      if (!file) return (err = 'File does not exist.');
+
+      if (file.size > 1024 * 1024 * 5) {
+        return (err = 'The image/video largest is 5mb.');
+      }
+
       return newImages.push(file);
     });
 
-    if (err) {
-      showToastMessage(dispatch, err, 'error');
-    }
+    if (err) showToastMessage(dispatch, err, 'error');
     setImages([...images, ...newImages]);
   };
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,7 +177,7 @@ const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
 
     dispatch(
       createPost({
-        content: values?.content,
+        content,
         images,
         auth,
         feelingStatus: feeling?.label,
@@ -194,15 +198,17 @@ const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
         dispatch(showLoading(false));
         setImages([]);
         setOpen(false);
+        setContent('');
         setValue('content', '');
         dispatch(setIsChange());
         setIsLoadingModal(false);
       });
     setOpen(false);
   };
+
   return (
     <>
-      <ModalClose open={openModalClose} setOpen={setOpenModalClose} />
+      {/* <ModalClose open={openModalClose} setOpen={setOpenModalClose} /> */}
       <Modal
         open={open}
         onClose={handleClose}
@@ -210,7 +216,7 @@ const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
         aria-describedby="modal-modal-description"
       >
         {typeModal !== 'activity' ? (
-          <Box sx={style} className="w-[300px] sm:w-[500px]">
+          <Box sx={style} className="w-[500px]">
             <div className="flex relative items-center justify-center ">
               <div className="text-lg flex items-center justify-center pb-2 font-semibold border-b border-gray-300 w-full">
                 Create Post
@@ -281,10 +287,16 @@ const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
             <form onSubmit={handleSubmit(handleCreatePost)}>
               <div className="status_body">
                 <textarea
-                  {...register('content', {})}
-                  placeholder={`${auth?.user?.username}, what are you thinking ?`}
-                  style={{ resize: 'vertical' }}
-                ></textarea>
+                  name="content"
+                  value={content}
+                  placeholder={`${auth?.user?.username}, what are you thinking?`}
+                  onChange={(e: any) => setContent(e.target.value)}
+                />
+
+                <div className="flex">
+                  <div className="flex-1"></div>
+                  <Icons setContent={setContent} content={content} />
+                </div>
                 <div className="show_images">
                   {images.map((img: any, index: any) => (
                     <AvatarItemCreatePost
@@ -330,7 +342,7 @@ const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
                           name="file"
                           id="file"
                           multiple
-                          accept="image/*"
+                          accept="image/*,video/*"
                           onChange={handleChangeImages}
                           className="cursor-pointer w-[30px]"
                         />
@@ -408,7 +420,7 @@ const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
                 <div className="flex flex-col gap-5">
                   <TextField
                     variant="outlined"
-                    placeholder="Search..."
+                    placeholder={`${t('search')}`}
                     InputProps={{
                       style: {
                         height: '40px',
@@ -468,7 +480,7 @@ const ModalCreatePost: React.FC<ModalCreatePostProps> = ({
                 <div className="flex flex-col gap-5">
                   <TextField
                     variant="outlined"
-                    placeholder="Search..."
+                    placeholder={`${t('search')}`}
                     InputProps={{
                       style: {
                         height: '40px',

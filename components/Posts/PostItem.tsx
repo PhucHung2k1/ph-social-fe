@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { createComment } from '@/store/comment/commentAction';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
+import CopyAllIcon from '@mui/icons-material/CopyAll';
+
 import {
   deletePost,
   likePost,
@@ -8,7 +10,7 @@ import {
   unLikePost,
   unSavePost,
 } from '@/store/post/postAction';
-import { BASE_URL } from '@/utils/config';
+import { BASE_FE, BASE_URL } from '@/utils/config';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
@@ -42,6 +44,8 @@ import ModalEditPost from '../HomePage/ModalEditPost';
 import CommentItem from './CommentItem';
 import ModalBigPostItem from './ModalBigPostItem';
 import ModalUserLikes from '../User/ModalUserLikes';
+import Icons from '../Icon';
+import { useTranslation } from 'react-i18next';
 
 interface UserData {
   avatar: string;
@@ -79,6 +83,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 const PostItem: React.FC<PostItemProps> = ({ item }) => {
   const itemRef = useRef<any>(item);
+  const { t } = useTranslation();
   const [openModalLike, setOpenModalLike] = useState(false);
   const dispatch = useAppDispatch();
   const socket = useAppSelector((state) => state.socketSlice.socket);
@@ -92,7 +97,7 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
   const [openModal, setOpenModal] = useState(false);
   const [saved, setSaved] = useState(false);
   const [openModalDeletePost, setOpenModalDeletePost] = useState(false);
-  const [openModalBig, setOpenModalBig] = useState(false);
+  const [content, setContent] = useState('');
   const [isLoadingHandleComment, setIsLoadingHandleComment] = useState(false);
   const [isShare, setIsShare] = useState(false);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -110,7 +115,7 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
     setAnchorEl(null);
   };
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(`${BASE_URL}/post/${item._id}`);
+    navigator.clipboard.writeText(`${BASE_FE}/post/${item._id}`);
     handleClose();
   };
   const handleCloseModalDeletePost = () => {
@@ -127,11 +132,11 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
     return (
       <div
         onClick={() => {
-          // setOpenModalBig(true);
           router.push(`/post/${item._id}`);
         }}
+        className="w-100 "
       >
-        {!props.item.url.includes('mp4') ? (
+        {!props?.item?.url?.includes('mp4') ? (
           <Paper>
             <img
               src={props.item.url}
@@ -151,24 +156,21 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
     );
   };
   const handleEditPost = (item: any) => {
-    console.log(item);
     setOpenModal(true);
     setAnchorEl(false);
   };
   const handleDeletePost = (item: any) => {
-    console.log(item);
-
     setAnchorEl(false);
     setOpenModalDeletePost(true);
   };
 
   const handleComment = (values: any) => {
-    if (values?.comment.trim() === '') return;
+    // if (values?.comment.trim() === '') return;
 
-    setValue('comment', '');
+    // setValue('comment', '');
 
     const newComment = {
-      content: values?.comment,
+      content: content,
       likes: [],
       user: auth?.user,
       createdAt: new Date().toISOString(),
@@ -176,7 +178,12 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
       // tag: onReply && dataReply?.user,
     };
 
-    dispatch(createComment(item, newComment, auth, socket)).then((res) => {});
+    dispatch(createComment(item, newComment, auth, socket)).then((res: any) => {
+      if (res) {
+        setContent('');
+      }
+    });
+    setContent('');
   };
 
   const handleLike = async () => {
@@ -205,7 +212,7 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
 
   return (
     <>
-      <ModalBigPostItem
+      {/* <ModalBigPostItem
         open={openModalBig}
         setOpen={setOpenModalBig}
         item={item}
@@ -213,7 +220,7 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
         setIsLike={setIsLike}
         handleLike={handleLike}
         handleUnLike={handleUnLike}
-      />
+      /> */}
       <BootstrapDialog
         onClose={handleCloseModalDeletePost}
         aria-labelledby="customized-dialog-title"
@@ -345,20 +352,19 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
             {item?.user?._id === auth?.user?._id && (
               <div>
                 <MenuItem onClick={() => handleEditPost(item)} className="h-10">
-                  <EditOutlinedIcon className="mr-2" /> Edit Post
+                  <EditOutlinedIcon className="mr-2" /> {t('editPost')}
                 </MenuItem>
                 <MenuItem
                   onClick={() => handleDeletePost(item)}
                   className="h-10"
                 >
-                  <DeleteOutlineIcon className="mr-2" /> Delete Post
+                  <DeleteOutlineIcon className="mr-2" /> {t('deletePost')}
+                </MenuItem>
+                <MenuItem onClick={handleCopyLink} className="h-10">
+                  <CopyAllIcon className="mr-2" /> {t('copyPost')}
                 </MenuItem>
               </div>
             )}
-            {/* 
-            <MenuItem onClick={handleCopyLink} className="h-10">
-              <CopyAllIcon className="mr-2" /> Copy Link
-            </MenuItem> */}
           </Menu>
         </div>
         <div className="content  px-4">
@@ -412,7 +418,7 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
                   setOpenModalLike(true);
                 }}
               >
-                {item?.likes?.length} likes
+                {item?.likes?.length} {t('likes')}
               </div>
             </Tooltip>
           ) : (
@@ -422,7 +428,7 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
                 setOpenModalLike(true);
               }}
             >
-              {item?.likes?.length} likes
+              {item?.likes?.length} {t('likes')}
             </div>
           )}
           <ModalUserLikes
@@ -432,7 +438,7 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
           />
 
           <div className="cursor-pointer">
-            {item?.comments?.length || 0} comments
+            {item?.comments?.length || 0} {t('comments')}
           </div>
         </div>
         <div className="footer flex items-center justify-between px-2 border-b border-t border-gray-300">
@@ -479,10 +485,11 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
             <div
               className="text-gray-700 text-[15px] pb-2 cursor-pointer font-semibold"
               onClick={() => {
-                setOpenModalBig(true);
+                router.push(`/post/${item?._id}`);
+                // setOpenModalBig(true);
               }}
             >
-              View more comments
+              {t('viewMoreComments')}
             </div>
           )}
           {item?.comments
@@ -517,16 +524,22 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
             className="w-full flex justify-center bg-main-home px-2 rounded-xl  gap-2"
           >
             <textarea
-              {...register('comment', {})}
-              className=" pt-2 bg-main-home min-h-10 resize-verstical h-10 !w-full border-none outline-none text-sm "
-              placeholder="Write a comment..."
+              value={content}
+              className=" pt-2 bg-main-home min-h-10 resize-vertical h-10 !w-full border-none outline-none text-sm "
+              placeholder={`${t('writeAComment')}`}
               rows={1}
+              onChange={(e: any) => setContent(e.target.value)}
             />
+
+            <div className="flex items-center justify-center">
+              <div className="flex-1"></div>
+              <Icons setContent={setContent} content={content} />
+            </div>
             <button
               className=" text-sm text-blue-600 font-semibold"
               type="submit"
             >
-              Post
+              {t('post')}
             </button>
           </form>
         </div>

@@ -17,8 +17,6 @@ export default function SavedPostScreen() {
   useEffect(() => {
     if (auth?.token) {
       dispatch(getSavedPosts({ token: auth?.token })).then((res) => {
-        console.log(res);
-
         if (res?.status === 200) {
           dispatch(getPostsRedux({ ...res?.data }));
         }
