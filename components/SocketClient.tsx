@@ -40,8 +40,8 @@ const SocketClient = () => {
     };
   };
   useEffect(() => {
-    if (socket && auth) {
-      socket.emit('joinUser', auth?.user);
+    if (socket && auth?.user) {
+      socket?.emit('joinUser', auth?.user);
     }
   }, [auth, auth?.user, socket]);
 
@@ -306,8 +306,6 @@ const SocketClient = () => {
   // call user
   useEffect(() => {
     socket.on('callUserToClient', (data: any) => {
-      
-     
       dispatch(callRedux(data));
     });
 

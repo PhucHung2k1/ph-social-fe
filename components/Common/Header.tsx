@@ -321,29 +321,6 @@ function Header() {
               </div>
               <NotifyModal />
 
-              {/* <IconButton
-                className="w-[40px] h-[40px]"
-                onClick={handleClickNoti}
-              >
-                <Badge badgeContent={4} color="error">
-                  <NotificationsActiveOutlined />
-                </Badge>
-                <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorElNoti}
-                  onClose={handleCloseNoti}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                >
-                  <Typography sx={{ p: 2 }}>
-                    The content of the Popover.
-                  </Typography>
-                </Popover>
-              </IconButton> */}
-
               <FormControl className="w-[150px] ">
                 <InputLabel id="language-label">Language</InputLabel>
                 <Select

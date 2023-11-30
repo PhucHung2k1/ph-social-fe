@@ -1,24 +1,44 @@
-import { useAppSelector } from '@/store/hook';
+import { useAppDispatch, useAppSelector } from '@/store/hook';
 import ExploreIcon from '@mui/icons-material/Explore';
 import FeedIcon from '@mui/icons-material/Feed';
 import ForumIcon from '@mui/icons-material/Forum';
 import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
-import { Avatar, Button, Skeleton, Tooltip } from '@mui/material';
+// import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import { PayPalButton } from 'react-paypal-button-v2';
+import {
+  Avatar,
+  Button,
+  DialogActions,
+  DialogContent,
+  IconButton,
+  Skeleton,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useRouter as routerLink } from 'next/router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-interface NavProps {
-  isClosedSlideBar: boolean;
-  setIsClosedSlideBar: any;
-}
-const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
-  const auth = useAppSelector((state) => state.authSlice.auth);
-  const { t, i18n } = useTranslation();
+import { BootstrapDialog } from '../Posts/PostItem';
+import { updateVipUserHandle } from '@/store/user/userAction';
+import { showToastMessage } from '@/utils/helper/showToastMessage';
 
-  const { data: session }: any = useSession();
+const paypalOptions = {
+  clientId:
+    'AYr_TRftw--yMftF62GNnhXACya5ES85JHXrB96yt1OM7hTZwHpcYhCDQ_7sQNE8T93OdNTHKPSy3I24', // Thay thế bằng ID của bạn
+  disableFunding: 'credit,card', // Ẩn thẻ ghi nợ hoặc tín dụng
+};
+
+const Nav = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
+  const auth = useAppSelector((state) => state.authSlice.auth);
+
+  const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
+  const [openModalDeletePost, setOpenModalDeletePost] = useState(false);
+  const { data: session } = useSession();
 
   const router = useRouter();
   const routerMain = routerLink();
@@ -77,7 +97,7 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
   //   }
   //   return arr;
   // };'
-  const bubbleSort = (arr: any) => {
+  const bubbleSort = (arr) => {
     let n = arr.length;
     for (let i = 0; i < n - 1; i++) {
       for (let j = 0; j < n - i - n; j++) {
@@ -92,7 +112,7 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
   };
   // console.log(bubbleSort(arrTest));
 
-  const selectionSort = (arr: Array<Number>) => {
+  const selectionSort = (arr) => {
     let n = arr.length;
     for (let i = 0; i < n - 1; i++) {
       let minIndex = i;
@@ -114,7 +134,7 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
 
   const selectArr = [2, 4, 1, 3];
 
-  const hung = input.reduce((acc: any, cur) => {
+  const hung = input.reduce((acc, cur) => {
     if (cur.gender === 'nam') {
       const { id, name, gender } = cur;
       return [...acc, { human: `${id}${name}`, gender }];
@@ -122,7 +142,7 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
     return acc;
   }, []);
 
-  const bubbleSort1 = (arr: Array<Number>) => {
+  const bubbleSort1 = (arr) => {
     let n = arr.length;
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < n - i - 1; j++) {
@@ -136,7 +156,7 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
     return arr;
   };
 
-  const selectionSort1 = (arr: Array<Number>) => {
+  const selectionSort1 = (arr) => {
     let n = arr.length;
     for (let i = 0; i < n - 1; i++) {
       let minIndex = i;
@@ -204,7 +224,7 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
       href: '/ph-gpt',
     },
   ]);
-  const handleSelectedListFeature = (value: any) => {
+  const handleSelectedListFeature = (value) => {
     setListFeature(
       listFeature.map((item) => {
         return {
@@ -225,11 +245,97 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
     });
   }, [i18n.language, t]);
 
+  const handleCloseModalDeletePost = () => {
+    setOpenModalDeletePost(false);
+    console.log('auth', auth);
+  };
+  const handleConfirmDeletePost = async () => {
+    // await dispatch(deletePost({ post: item, auth, socket }));
+    // handleCloseModalDeletePost();
+  };
+
   return (
     <nav
       className={`fixed  top-[71px] left-0 h-full shadow
       } bg-white p-4 transition-all w-72`}
     >
+      <BootstrapDialog
+        onClose={handleCloseModalDeletePost}
+        aria-labelledby="customized-dialog-title"
+        open={openModalDeletePost}
+      >
+        <div className="text-center text-xl font-semibold py-3">
+          {t('updateVipUser')}
+        </div>
+
+        <IconButton
+          aria-label="close"
+          onClick={handleCloseModalDeletePost}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <Typography gutterBottom>{t('areYouUpdateVipUser')}</Typography>
+        </DialogContent>
+        <DialogActions className="flex items-center">
+          <Button
+            variant="contained"
+            className="!mt-[-7px] mr-2 w-[100px]  rounded-lg bg-white !font-semibold !text-black hover:bg-white normal-case "
+            onClick={handleCloseModalDeletePost}
+          >
+            Cancel
+          </Button>
+          {/* <Button
+            variant="contained"
+            className="!mt-3 mr-2  w-[100px] rounded-lg bg-mango-primary-blue !font-semibold !text-white normal-case "
+            sx={{ '&:hover': { backgroundColor: '#00ADC3' } }}
+            onClick={handleConfirmDeletePost}
+          >
+            Delete
+          </Button> */}
+          {/* <PayPalScriptProvider options={initialOptions}>
+            <PayPalButtons
+              style={{
+                color: 'blue',
+                layout: 'horizontal',
+                label: 'pay',
+                height: 35,
+              }}
+              createOrder={async () => {
+                const res = await fetch(`/api/checkout`, {
+                  method: 'POST',
+                });
+               
+                const order = await res.json();
+                console.log(order);
+                return order.id;
+              }}
+            />
+          </PayPalScriptProvider> */}
+          <PayPalButton
+            amount="10.00"
+            options={paypalOptions}
+            onSuccess={(details, data) => {
+              showToastMessage(
+                dispatch,
+                `Update Role User Successful`,
+                'success'
+              );
+
+              handleCloseModalDeletePost();
+
+              dispatch(updateVipUserHandle({ auth }));
+
+              // window.location.reload();
+            }}
+          />
+        </DialogActions>
+      </BootstrapDialog>
       <Button
         variant="text"
         className="mb-6 flex h-[80px] w-full cursor-pointer rounded-[5px] !bg-white px-[10px] py-[15px] shadow-md"
@@ -308,7 +414,13 @@ const Nav: React.FC<NavProps> = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
               variant="text"
               onClick={() => {
                 handleSelectedListFeature(item.id);
-                router.push(item.href);
+                if (auth?.user?.role !== 'vip') {
+                  console.log('a');
+
+                  setOpenModalDeletePost(true);
+                } else {
+                  router.push(item.href);
+                }
               }}
               sx={{
                 mt: 2,

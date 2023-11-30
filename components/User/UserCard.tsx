@@ -24,7 +24,6 @@ function UserCard({
   link = true,
   msg,
 }: Props) {
-  console.log('🚀 ~ file: UserCard.tsx:26 ~ user:', user);
   const { t } = useTranslation();
 
   const showMsg = (user: any) => {

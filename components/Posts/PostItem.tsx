@@ -72,7 +72,7 @@ export interface PostData {
 interface PostItemProps {
   item: PostData;
 }
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+export const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
   },
@@ -208,26 +208,17 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
     } else {
       setSaved(false);
     }
-  }, [auth.user.saved, item._id]);
+  }, [auth?.user?.saved, item._id]);
 
   return (
     <>
-      {/* <ModalBigPostItem
-        open={openModalBig}
-        setOpen={setOpenModalBig}
-        item={item}
-        isLike={isLike}
-        setIsLike={setIsLike}
-        handleLike={handleLike}
-        handleUnLike={handleUnLike}
-      /> */}
       <BootstrapDialog
         onClose={handleCloseModalDeletePost}
         aria-labelledby="customized-dialog-title"
         open={openModalDeletePost}
       >
         <div className="text-center text-xl font-semibold py-3">
-          Delete Post?
+          {t('deletePost')}
         </div>
 
         <IconButton
@@ -243,11 +234,7 @@ const PostItem: React.FC<PostItemProps> = ({ item }) => {
           <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-          <Typography gutterBottom>
-            Items in your trash will be automatically deleted after 30 days. You
-            can delete them from your trash earlier by going to activity log in
-            settings.
-          </Typography>
+          <Typography gutterBottom>{t('areYouSureDeletePost')}</Typography>
         </DialogContent>
         <DialogActions>
           <Button

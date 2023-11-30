@@ -61,7 +61,7 @@ const FollowBtn: React.FC<FollowBtnProps> = ({ user, small }) => {
         <Button
           variant="outlined"
           className={
-            '!bg-orange-500 w-28 !text-white hover:opacity-75 text-[13px]' +
+            '!bg-orange-500 w-28 !text-white hover:opacity-75 !text-[13px]' +
             (small ? ' w-24 normal-case text-base' : ' w-28')
           }
           onClick={handleUnFollow}
@@ -72,7 +72,7 @@ const FollowBtn: React.FC<FollowBtnProps> = ({ user, small }) => {
         <Button
           variant="outlined"
           className={
-            '!bg-blue-500  !text-white hover:opacity-75 text-[13px]' +
+            '!bg-blue-500  !text-white hover:opacity-75 !text-[13px]' +
             (small ? ' w-24 normal-case text-base' : ' w-28')
           }
           onClick={handleFollow}

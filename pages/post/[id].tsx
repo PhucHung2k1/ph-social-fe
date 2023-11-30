@@ -226,7 +226,7 @@ const ModalBigPostItem: React.FC<ModalBigPostItemProps> = ({}) => {
         open={openModalDeletePost}
       >
         <div className="text-center text-xl font-semibold py-3">
-          Delete Post?
+          {t('deletePost')}
         </div>
 
         <IconButton
@@ -243,9 +243,7 @@ const ModalBigPostItem: React.FC<ModalBigPostItemProps> = ({}) => {
         </IconButton>
         <DialogContent dividers>
           <Typography gutterBottom>
-            Items in your trash will be automatically deleted after 30 days. You
-            can delete them from your trash earlier by going to activity log in
-            settings.
+            Are you sure you want to delete this post?
           </Typography>
         </DialogContent>
         <DialogActions>

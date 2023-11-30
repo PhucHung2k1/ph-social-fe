@@ -16,6 +16,7 @@ import SocketClient from '../SocketClient';
 import { getNotifies } from '@/store/notify/notifyAction';
 import CallModal from '../Message/CallModal';
 import { setPeerRedux } from '@/store/peer/peerSlice';
+import CrispProvider from '../Common/crisp-provider';
 
 var connectionOptions = {
   transports: ['websocket'],
@@ -125,6 +126,7 @@ function LayoutMain({ children }) {
   return (
     <div>
       <Header />
+      <CrispProvider />
       <div className="flex">
         <>
           <div className="hidden lg:block">

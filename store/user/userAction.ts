@@ -9,7 +9,7 @@ import { setIsChange } from './userSlice';
 import { showLoading } from '../loading/loadingSlice';
 import { getUser } from '../profile/profileSlice';
 import { setAuth } from '../auth/authSlice';
-import { postDataAPI } from '@/utils/fetchData';
+import { getDataAPI, postDataAPI } from '@/utils/fetchData';
 
 export const searchUser = createAsyncThunk(
   'user/searchUser',
@@ -178,3 +178,19 @@ export const updateCoverImage = createAsyncThunk(
     } catch (err: any) {}
   }
 );
+export const updateVipUserHandle =
+  ({ auth }: any) =>
+  async (dispatch: any) => {
+    try {
+      const res = await getDataAPI(
+        `updateVipUser/${auth?.user?._id}`,
+        auth.token
+      );
+
+      dispatch(setIsChange());
+      dispatch(setAuth({ ...auth, user: res?.data?.updatedUser }));
+      return res;
+    } catch (err: any) {
+      showToastMessage(dispatch, err.response.data.msg, 'error');
+    }
+  };

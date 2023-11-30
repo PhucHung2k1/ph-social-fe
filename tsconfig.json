@@ -29,7 +29,13 @@
     "components/oop1.jsx",
     "components/layouts/LayoutMain.jsx",
     "pages/socket-client.jsx",
-    "components/HomePage/ModalEditPost.tsx"
-, "components/Message/CallModal.jsx", "components/Message/Times.jsx"  ],
+    "components/HomePage/ModalEditPost.tsx",
+    "components/Message/CallModal.jsx",
+    "components/Message/Times.jsx",
+    "components/Common/CheckoutForm.jsx",
+    "components/Common/Nav.jsx",
+    "api/checkout/route.js",
+    "api/checkout/hello.js"
+  ],
   "exclude": ["node_modules"]
 }

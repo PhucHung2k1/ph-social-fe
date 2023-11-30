@@ -52,6 +52,9 @@ const resources = {
       aPosts: 'Post',
       edit: 'Edit',
       delete: 'Delete',
+      areYouSureDeletePost: 'Are you sure you want to delete this post?',
+      updateVipUser: 'Update Vip User',
+      areYouUpdateVipUser: 'Are you sure you want to update vip user?',
     },
   },
   vi: {
@@ -101,6 +104,9 @@ const resources = {
       aPosts: 'Bài viết',
       edit: 'Sửa',
       delete: 'Xóa',
+      areYouSureDeletePost: 'Bạn có chắc chắn muốn xóa bài viết này?',
+      updateVipUser: 'Nâng cấp thành viên VIP',
+      areYouUpdateVipUser: 'Bạn có chắc chắn muốn nâng cấp thành viên VIP?',
     },
   },
 };

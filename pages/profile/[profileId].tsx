@@ -556,7 +556,7 @@ const ProfileID = () => {
                     {t('role')}: {userData?.role}
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-5 mt-2">
+                <div className="flex items-center justify-center">
                   {/* <div className="flex h-[40px] w-[40px] items-center justify-center rounded-3xl bg-[#F4F4F8]">
                     <Image
                       src="/images/Authentication/icongoogle.svg"

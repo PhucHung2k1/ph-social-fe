@@ -223,7 +223,7 @@ export const deletePost =
 export const savePost =
   ({ post, auth }: { post: PostData; auth: Auth }) =>
   async (dispatch: any) => {
-    const newUser = { ...auth.user, saved: [...auth.user.saved, post._id] };
+    const newUser = { ...auth.user, saved: [...auth?.user?.saved, post._id] };
 
     dispatch(
       setAuth({
@@ -242,7 +242,7 @@ export const unSavePost =
   async (dispatch: any) => {
     const newUser = {
       ...auth.user,
-      saved: auth.user.saved.filter((item) => item !== post._id),
+      saved: auth?.user?.saved.filter((item) => item !== post._id),
     };
 
     dispatch(

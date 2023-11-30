@@ -1,26 +1,48 @@
 import ExploreIcon from '@mui/icons-material/Explore';
 import FeedIcon from '@mui/icons-material/Feed';
 import ForumIcon from '@mui/icons-material/Forum';
-import { useAppSelector } from '@/store/hook';
+import { useAppDispatch, useAppSelector } from '@/store/hook';
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
-import { Avatar, Button, Skeleton, Tooltip } from '@mui/material';
+import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
+import {
+  Avatar,
+  Button,
+  DialogActions,
+  DialogContent,
+  IconButton,
+  Skeleton,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { useSession } from 'next-auth/react';
+import { PayPalButton } from 'react-paypal-button-v2';
+import CloseIcon from '@mui/icons-material/Close';
 import { useRouter } from 'next/navigation';
 import { useRouter as routerLink } from 'next/router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { BootstrapDialog } from '../Posts/PostItem';
+import { updateVipUserHandle } from '@/store/user/userAction';
+import { showToastMessage } from '@/utils/helper/showToastMessage';
 interface NavProps {
   isClosedSlideBar: boolean;
   setIsClosedSlideBar: any;
 }
+const paypalOptions = {
+  clientId:
+    'AYr_TRftw--yMftF62GNnhXACya5ES85JHXrB96yt1OM7hTZwHpcYhCDQ_7sQNE8T93OdNTHKPSy3I24', // Thay thế bằng ID của bạn
+  disableFunding: 'credit,card', // Ẩn thẻ ghi nợ hoặc tín dụng
+};
+
 const NavSoft: React.FC<NavProps> = ({
   isClosedSlideBar,
   setIsClosedSlideBar,
 }) => {
   const auth = useAppSelector((state) => state.authSlice.auth);
   const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
   const { data: session }: any = useSession();
-
+  const [openModalDeletePost, setOpenModalDeletePost] = useState(false);
   const router = useRouter();
   const routerMain = routerLink();
 
@@ -65,6 +87,21 @@ const NavSoft: React.FC<NavProps> = ({
       component: <></>,
       href: '/messages',
     },
+    {
+      id: 'PH-GPT',
+      name: 'PH-GPT',
+      icon: <PsychologyAltIcon />,
+      selected: false,
+      component: <></>,
+      href: '/ph-gpt',
+      handleClick: () => {
+        if (auth?.user?.role !== 'vip') {
+          setOpenModalDeletePost(true);
+        } else {
+          router.push(`/ph-gpt`);
+        }
+      },
+    },
   ]);
   useEffect(() => {
     setListFeature((prevListFeature) => {
@@ -86,12 +123,93 @@ const NavSoft: React.FC<NavProps> = ({
       })
     );
   };
+  const handleCloseModalDeletePost = () => {
+    setOpenModalDeletePost(false);
+    console.log('auth', auth);
+  };
 
   return (
     <nav
       className={`fixed  top-[71px] left-0 h-full shadow
       } bg-white p-4 transition-all`}
     >
+      <BootstrapDialog
+        onClose={handleCloseModalDeletePost}
+        aria-labelledby="customized-dialog-title"
+        open={openModalDeletePost}
+      >
+        <div className="text-center text-xl font-semibold py-3">
+          {t('updateVipUser')}
+        </div>
+
+        <IconButton
+          aria-label="close"
+          onClick={handleCloseModalDeletePost}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <Typography gutterBottom>{t('areYouUpdateVipUser')}</Typography>
+        </DialogContent>
+        <DialogActions className="flex items-center">
+          <Button
+            variant="contained"
+            className="!mt-[-7px] mr-2 w-[100px]  rounded-lg bg-white !font-semibold !text-black hover:bg-white normal-case "
+            onClick={handleCloseModalDeletePost}
+          >
+            Cancel
+          </Button>
+          {/* <Button
+            variant="contained"
+            className="!mt-3 mr-2  w-[100px] rounded-lg bg-mango-primary-blue !font-semibold !text-white normal-case "
+            sx={{ '&:hover': { backgroundColor: '#00ADC3' } }}
+            onClick={handleConfirmDeletePost}
+          >
+            Delete
+          </Button> */}
+          {/* <PayPalScriptProvider options={initialOptions}>
+            <PayPalButtons
+              style={{
+                color: 'blue',
+                layout: 'horizontal',
+                label: 'pay',
+                height: 35,
+              }}
+              createOrder={async () => {
+                const res = await fetch(`/api/checkout`, {
+                  method: 'POST',
+                });
+               
+                const order = await res.json();
+                console.log(order);
+                return order.id;
+              }}
+            />
+          </PayPalScriptProvider> */}
+          <PayPalButton
+            amount="10.00"
+            options={paypalOptions}
+            onSuccess={(details: any, data: any) => {
+              showToastMessage(
+                dispatch,
+                `Update Role User Successful`,
+                'success'
+              );
+
+              handleCloseModalDeletePost();
+
+              dispatch(updateVipUserHandle({ auth }));
+
+              window.location.reload();
+            }}
+          />
+        </DialogActions>
+      </BootstrapDialog>
       <div
         className="cursor-pointer flex items-center justify-center"
         onClick={() => {
@@ -130,8 +248,12 @@ const NavSoft: React.FC<NavProps> = ({
               <Button
                 variant="text"
                 onClick={() => {
-                  handleSelectedListFeature(item.id);
-                  router.push(item.href);
+                  if (item?.handleClick) {
+                    item.handleClick();
+                  } else {
+                    handleSelectedListFeature(item.id);
+                    router.push(item.href);
+                  }
                 }}
                 sx={{
                   mt: 2,

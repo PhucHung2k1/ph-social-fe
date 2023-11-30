@@ -112,7 +112,7 @@ const RightSide = () => {
   }, [id, message?.users]);
   // useEffect(() => {
   //   const newData = message.data.find((item: any) => item._id === id);
-  //   console.log('🚀 ~ file: RightSide.tsx:103 ~ useEffect ~ newData:', newData);
+
   //   if (newData) {
   //     setData(newData.messages);
   //     setResult(newData.result);
