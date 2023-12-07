@@ -116,7 +116,7 @@ const GPTPage = () => {
         dispatch(refreshToken(res?.payload?.refresh_token));
       }
     });
-  }, [auth, dispatch, session?.user]);
+  }, [dispatch, session?.user]);
 
   return (
     <div className="app bg-[rgb(3,0,31)] text-white min-h-screen grid grid-cols-12">

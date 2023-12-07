@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hook';
 import {
   addMessageRedux,
   messageAddUserRedux,
+  removeMessageRedux,
 } from '@/store/message/messageSlice';
 import {
   createNotifyRedux,
@@ -23,6 +24,8 @@ const SocketClient = () => {
   const router = useRouter();
   const auth = useAppSelector((state: any) => state.authSlice.auth);
   const online = useAppSelector((state) => state.onlineSlice.users);
+  const message = useAppSelector((state) => state.messageSlice);
+
   const socket = useAppSelector((state: any) => state.socketSlice.socket);
   const call = useAppSelector((state) => state.callSlice.call);
   const dispatch = useAppDispatch();
@@ -221,12 +224,12 @@ const SocketClient = () => {
     socket.on('createNotifyToClient', (msg: any) => {
       dispatch(createNotifyRedux(msg));
       dispatch(setIsChange());
-      spawnNotification(
-        msg.user.username + ' ' + msg.text,
-        msg.user.avatar,
-        msg.url,
-        'PH SOCIAL'
-      );
+      // spawnNotification(
+      //   msg.user.username + ' ' + msg.text,
+      //   msg.user.avatar,
+      //   msg.url,
+      //   'PH SOCIAL'
+      // );
       toast(`${msg.user.username} ${msg.text}`, {
         position: 'bottom-right',
         autoClose: 2000, // Đóng sau 3 giây
@@ -261,12 +264,22 @@ const SocketClient = () => {
   useEffect(() => {
     socket.on('addMessageToClient', (msg: any) => {
       dispatch(addMessageRedux(msg));
+
       dispatch(
         messageAddUserRedux({ ...msg.user, text: msg.text, media: msg.media })
       );
+
       dispatch(setIsChange());
     });
     return () => socket.off('addMessageToClient');
+  }, [auth, dispatch, socket]);
+  useEffect(() => {
+    socket.on('removeMessageToClient', (msg: any) => {
+      dispatch(removeMessageRedux(msg));
+
+      dispatch(setIsChange());
+    });
+    return () => socket.off('removeMessageToClient');
   }, [auth, dispatch, socket]);
 
   // onl off status

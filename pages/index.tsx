@@ -40,10 +40,7 @@ export default function HomeScreen() {
   //       path: '/',
   //       secure: true,
   //     });
-  //     console.log(
-  //       '🚀 ~ file: LayoutMain.jsx:91 ~ useEffect ~ newPeer:',
-  //       newPeer
-  //     );
+  //
   //   });
   // }, []);
 

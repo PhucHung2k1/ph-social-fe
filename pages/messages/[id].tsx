@@ -4,10 +4,12 @@ import LayoutMainSoftNav from '@/components/layouts/LayoutMainSoftNav';
 import { getDiscoverPosts } from '@/store/discover/discoverAction';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { getPostsRedux } from '@/store/post/postSlice';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 export default function Conversation() {
   const auth = useAppSelector((state) => state.authSlice.auth);
   const discoverRedux = useAppSelector((state) => state.discoverSlice);
+  const router = useRouter();
 
   const homePost = useAppSelector((state) => state.homePost);
 

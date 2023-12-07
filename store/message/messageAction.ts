@@ -14,6 +14,7 @@ import {
   messageAddUserRedux,
 } from './messageSlice';
 import { DeleteData } from '../globalTypes';
+import { createNotify } from '../notify/notifyAction';
 
 export const addUser =
   ({ user, message }: any) =>
@@ -27,18 +28,22 @@ export const addUser =
     }
   };
 export const addMessage =
-  ({ msg, auth, socket }: any) =>
+  ({ msg, auth, socket, msgNotify = {} }: any) =>
   async (dispatch: any) => {
     const { _id, avatar, fullname, username } = auth.user;
-    dispatch(addMessageRedux(msg));
+
     socket.emit('addMessage', {
       ...msg,
       user: { _id, avatar, fullname, username },
     });
     try {
-      await postDataAPI('message', msg, auth.token);
+      const res: any = await postDataAPI('message', msg, auth.token);
+      if (res?.status === 200) {
+        dispatch(addMessageRedux(res.data.newMessage));
+      }
+      dispatch(createNotify({ msg: msgNotify, auth, socket }));
     } catch (err: any) {
-      showToastMessage(dispatch, err.response.data.msg, 'error');
+      // showToastMessage(dispatch, err.response.data.msg, 'error');
     }
   };
 export const getConversations =
@@ -77,12 +82,14 @@ export const getMessage =
     }
   };
 export const deleteMessages =
-  ({ msg, data, auth }: any) =>
+  ({ msg, data, auth, socket }: any) =>
   async (dispatch: any) => {
     const newData = DeleteData(data, msg._id);
     dispatch(deleteMessagesRedux({ newData, _id: msg.recipient }));
     try {
       await deleteDataAPI(`message/${msg._id}`, auth.token);
+
+      socket.emit('removeMessage', msg);
     } catch (err: any) {
       showToastMessage(dispatch, err.response.data.msg, 'error');
     }

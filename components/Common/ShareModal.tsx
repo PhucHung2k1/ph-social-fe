@@ -21,9 +21,9 @@ type ShareModalProps = {
 const ShareModal: React.FC<ShareModalProps> = ({ url }) => {
   return (
     <div className="flex justify-between px-4 py-2">
-      <FacebookShareButton url={url}>
+      {/* <FacebookShareButton url={url}>
         <FacebookIcon round={true} size={32} />
-      </FacebookShareButton>
+      </FacebookShareButton> */}
 
       <TwitterShareButton url={url}>
         <TwitterIcon round={true} size={32} />

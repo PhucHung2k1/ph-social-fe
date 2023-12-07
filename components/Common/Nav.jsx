@@ -414,9 +414,7 @@ const Nav = ({ isClosedSlideBar, setIsClosedSlideBar }) => {
               variant="text"
               onClick={() => {
                 handleSelectedListFeature(item.id);
-                if (auth?.user?.role !== 'vip') {
-                  console.log('a');
-
+                if (auth?.user?.role !== 'vip' && item.id === 'PH-GPT') {
                   setOpenModalDeletePost(true);
                 } else {
                   router.push(item.href);

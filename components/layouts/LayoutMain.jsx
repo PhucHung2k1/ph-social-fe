@@ -126,7 +126,8 @@ function LayoutMain({ children }) {
   return (
     <div>
       <Header />
-      <CrispProvider />
+      {!router.pathname.includes('messages') && <CrispProvider />}
+
       <div className="flex">
         <>
           <div className="hidden lg:block">

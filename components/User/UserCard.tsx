@@ -102,14 +102,13 @@ function UserCard({
                 <div className="ml-1 ">
                   <span className="block">{user.username}</span>
                   <small className="opacity-70">
-                    {user.text !== '' ? (
-                      user.text
-                    ) : (
-                      <ImageIcon
-                        style={{ color: 'red' }}
-                        className="cursor-pointer"
-                      />
-                    )}
+                    {user.text !== ''
+                      ? user.text
+                      : // <ImageIcon
+                        //   style={{ color: 'red' }}
+                        //   className="cursor-pointer"
+                        // />
+                        ''}
                   </small>
                 </div>
               </div>

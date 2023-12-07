@@ -94,13 +94,6 @@ const NavSoft: React.FC<NavProps> = ({
       selected: false,
       component: <></>,
       href: '/ph-gpt',
-      handleClick: () => {
-        if (auth?.user?.role !== 'vip') {
-          setOpenModalDeletePost(true);
-        } else {
-          router.push(`/ph-gpt`);
-        }
-      },
     },
   ]);
   useEffect(() => {
@@ -130,7 +123,7 @@ const NavSoft: React.FC<NavProps> = ({
 
   return (
     <nav
-      className={`fixed  top-[71px] left-0 h-full shadow
+      className={`fixed  top-[71px] left-0 h-full shadow w-[100px]
       } bg-white p-4 transition-all`}
     >
       <BootstrapDialog
@@ -248,10 +241,10 @@ const NavSoft: React.FC<NavProps> = ({
               <Button
                 variant="text"
                 onClick={() => {
-                  if (item?.handleClick) {
-                    item.handleClick();
+                  handleSelectedListFeature(item.id);
+                  if (auth?.user?.role !== 'vip' && item.id === 'PH-GPT') {
+                    setOpenModalDeletePost(true);
                   } else {
-                    handleSelectedListFeature(item.id);
                     router.push(item.href);
                   }
                 }}

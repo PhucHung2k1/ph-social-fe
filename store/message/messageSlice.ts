@@ -21,7 +21,9 @@ const messageSlice = createSlice({
   initialState,
   reducers: {
     messageAddUserRedux: (state, action) => {
-      state.users = [...state.users, action.payload];
+      if (state.users.every((item: any) => item._id !== action.payload._id)) {
+        state.users = [...state.users, action.payload];
+      }
     },
     addMessageRedux: (state, action) => {
       state.data = [...state.data, action.payload];
@@ -35,6 +37,12 @@ const messageSlice = createSlice({
               call: action.payload.call,
             }
           : user
+      );
+    },
+    removeMessageRedux: (state, action) => {
+    
+      state.data = state.data.filter(
+        (item: any) => item._id !== action.payload._id
       );
     },
     getConversationRedux: (state, action) => {
@@ -74,5 +82,6 @@ export const {
   deleteMessagesRedux,
   deleteConversationRedux,
   checkOnlineOfflineRedux,
+  removeMessageRedux,
 } = messageSlice.actions;
 export default messageSlice.reducer;

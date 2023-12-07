@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 const LeftSide = () => {
   const auth = useAppSelector((state: any) => state.authSlice.auth);
   const message = useAppSelector((state) => state.messageSlice);
+
   const online = useAppSelector((state) => state.onlineSlice.users);
   const dispatch = useAppDispatch();
   const pageEnd = useRef<any>();
@@ -134,17 +135,13 @@ const LeftSide = () => {
                       style={{ color: 'green', fontSize: '15px' }}
                     />
                   ) : (
-                    auth.user.following.find(
-                      (item: any) => item._id === user._id
-                    ) && (
-                      <FiberManualRecordIcon
-                        style={{
-                          color: 'gray',
-                          fontSize: '15px',
-                          opacity: 0.2,
-                        }}
-                      />
-                    )
+                    <FiberManualRecordIcon
+                      style={{
+                        color: 'gray',
+                        fontSize: '15px',
+                        opacity: 0.2,
+                      }}
+                    />
                   )}
                 </UserCard>
               </div>

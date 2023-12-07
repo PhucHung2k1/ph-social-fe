@@ -1,28 +1,28 @@
 /* eslint-disable @next/next/no-img-element */
+import { callRedux } from '@/store/call/callSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
-import { useRouter } from 'next/router';
-import React, { useState, useEffect, useRef } from 'react';
-import UserCard from '../User/UserCard';
-import SendIcon from '@mui/icons-material/Send';
-import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import DeleteIcon from '@mui/icons-material/Delete';
-import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
-import VideoCallIcon from '@mui/icons-material/VideoCall';
-import MsgDisplay from './MsgDisplay';
-import ImageIcon from '@mui/icons-material/Image';
-import { imageShow, videoShow } from '@/utils/mediaShow';
-import { Button } from '@mui/material';
-import Icons from '../Icon';
-import { imageUpload, videoUpload } from '@/utils/imageUpload';
 import {
   addMessage,
   deleteConversation,
   getMessage,
 } from '@/store/message/messageAction';
-import { callRedux } from '@/store/call/callSlice';
+import { imageUpload, videoUpload } from '@/utils/imageUpload';
+import { imageShow, videoShow } from '@/utils/mediaShow';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ImageIcon from '@mui/icons-material/Image';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import SendIcon from '@mui/icons-material/Send';
+import VideoCallIcon from '@mui/icons-material/VideoCall';
+import { Button } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import { useRouter } from 'next/router';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Icons from '../Icon';
+import UserCard from '../User/UserCard';
+import MsgDisplay from './MsgDisplay';
+import { createNotify } from '@/store/notify/notifyAction';
 const RightSide = () => {
   const router = useRouter();
   const [text, setText] = useState('');
@@ -33,6 +33,7 @@ const RightSide = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const message = useAppSelector((state) => state.messageSlice);
+
   const { id } = router.query;
   const [user, setUser] = useState<any>([]);
   const socket = useAppSelector((state: any) => state.socketSlice.socket);
@@ -72,8 +73,18 @@ const RightSide = () => {
       createdAt: new Date().toISOString(),
     };
 
+    // notify
+
+    const msgNotify = {
+      id: auth?.user?._id,
+      text: `just sent you a message ${text}`,
+      recipients: id,
+      url: `/messages/${auth?.user?._id}`,
+    };
+    // await dispatch(createNotify({ msg: msgNotify, auth, socket }));
+
     setLoadMedia(false);
-    await dispatch(addMessage({ msg, auth, socket }));
+    await dispatch(addMessage({ msg, auth, socket, msgNotify }));
     if (refDisplay.current) {
       refDisplay.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
@@ -279,7 +290,7 @@ const RightSide = () => {
           onChange={(e) => setText(e.target.value)}
         />
 
-        <Icons setContent={setText} content={text} />
+        {/* <Icons setContent={setText} content={text} /> */}
 
         <div className="file_upload cursor-pointer px-1">
           <ImageIcon style={{ color: 'red' }} className="cursor-pointer" />

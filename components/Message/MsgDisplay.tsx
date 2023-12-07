@@ -18,12 +18,12 @@ type MsgDisplayProps = {
 const MsgDisplay: React.FC<MsgDisplayProps> = ({ user, msg, data }) => {
   const auth = useAppSelector((state: any) => state.authSlice.auth);
   const dispatch = useAppDispatch();
-
+  const socket = useAppSelector((state: any) => state.socketSlice.socket);
   const handleDeleteMessages = () => {
     if (!data) return;
 
     if (window.confirm('Do you want to delete?')) {
-      dispatch(deleteMessages({ msg, data, auth }));
+      dispatch(deleteMessages({ msg, data, auth, socket }));
     }
   };
   return (
